@@ -20,16 +20,16 @@ def generate_launch_description():
             emulate_tty=True,
             parameters=[{'use_sim_time': False}]
         ),
-
-        Node(
-            package='frisbee_launcher',
-            executable='launcher_node',
-            name='launcher'
-        ),
-
-        Node(
-            package='frisbee_collector',
-            executable='collector_node',
-            name='collector'
-        )
+        
+        # Node(
+        #     package='frisbee_launcher',
+        #     executable='launcher_node',
+        #     name='launcher'
+        # ),
+        
+        # Node(
+        #     package='frisbee_collector',
+        #     executable='collector_node',
+        #     name='collector'
+        # )
     ])

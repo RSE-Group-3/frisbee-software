@@ -7,7 +7,7 @@
   <maintainer email="juncheng@andrew.cmu.edu">Tony Lu</maintainer>
   <license>MIT</license>
 
-  <tool_depend>ament_python</tool_depend>
+  <buildtool_depend>ament_python</tool_depend>
 
   <exec_depend>rclpy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
