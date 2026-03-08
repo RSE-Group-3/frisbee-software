@@ -16,7 +16,7 @@ tmux send-keys -t $SESSION:0.0 "conda activate frisbee-env" C-m
 tmux send-keys -t $SESSION:0.0 "source install/setup.bash" C-m
 tmux send-keys -t $SESSION:0.0 "launch motor placeholder" # launch motors
 
-tmux send-keys -t $SESSION:0.0 "conda activate frisbee-env" C-m
+tmux send-keys -t $SESSION:0.1 "conda activate frisbee-env" C-m
 tmux send-keys -t $SESSION:0.1 "source install/setup.bash" C-m
 tmux send-keys -t $SESSION:0.1 "launch motor placeholder" # launch motors
 
