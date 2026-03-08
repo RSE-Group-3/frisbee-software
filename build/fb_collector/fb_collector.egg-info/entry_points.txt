@@ -1,0 +1,2 @@
+[console_scripts]
+collector_node = fb_collector.collector_node:main

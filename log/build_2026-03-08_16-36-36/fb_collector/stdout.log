@@ -1,0 +1,20 @@
+running develop
+running egg_info
+creating fb_collector.egg-info
+writing fb_collector.egg-info/PKG-INFO
+writing dependency_links to fb_collector.egg-info/dependency_links.txt
+writing entry points to fb_collector.egg-info/entry_points.txt
+writing requirements to fb_collector.egg-info/requires.txt
+writing top-level names to fb_collector.egg-info/top_level.txt
+writing manifest file 'fb_collector.egg-info/SOURCES.txt'
+reading manifest file 'fb_collector.egg-info/SOURCES.txt'
+writing manifest file 'fb_collector.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/lib/python3.10/site-packages/fb-collector.egg-link (link to .)
+Installing collector_node script to /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/lib/fb_collector
+
+Installed /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_collector
+running symlink_data
+creating /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/ament_index/resource_index/packages
+symbolically linking /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_collector/resource/fb_collector -> /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/ament_index/resource_index/packages
+symbolically linking /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_collector/package.xml -> /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/fb_collector

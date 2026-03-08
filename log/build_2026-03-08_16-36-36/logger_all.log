@@ -1,0 +1,213 @@
+[0.073s] DEBUG:colcon:Command line arguments: ['/home/mmliu/miniconda3/envs/frisbee_env/bin/colcon', 'build', '--packages-select', 'fb_collector', '--symlink-install']
+[0.073s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=True, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=24, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=['fb_collector'], packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x7491f3d43c70>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7491f3d436d0>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7491f3d436d0>>)
+[0.090s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.090s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.090s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.090s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.090s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.090s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.090s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software'
+[0.090s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.091s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.091s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.091s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.091s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.091s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.091s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.091s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.091s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.105s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.105s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.105s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.105s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.105s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.105s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.105s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.105s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.105s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.105s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.105s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.105s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts) by extensions ['ignore', 'ignore_ament_install']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts) by extension 'ignore'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts) by extension 'ignore_ament_install'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts) by extensions ['colcon_pkg']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts) by extension 'colcon_pkg'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts) by extensions ['colcon_meta']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts) by extension 'colcon_meta'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts) by extensions ['ros']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts) by extension 'ros'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts) by extensions ['cmake', 'python']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts) by extension 'cmake'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts) by extension 'python'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts) by extensions ['python_setup_py']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts) by extension 'python_setup_py'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/laptop) by extensions ['ignore', 'ignore_ament_install']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/laptop) by extension 'ignore'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/laptop) by extension 'ignore_ament_install'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/laptop) by extensions ['colcon_pkg']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/laptop) by extension 'colcon_pkg'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/laptop) by extensions ['colcon_meta']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/laptop) by extension 'colcon_meta'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/laptop) by extensions ['ros']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/laptop) by extension 'ros'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/laptop) by extensions ['cmake', 'python']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/laptop) by extension 'cmake'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/laptop) by extension 'python'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/laptop) by extensions ['python_setup_py']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/laptop) by extension 'python_setup_py'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/robot) by extensions ['ignore', 'ignore_ament_install']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/robot) by extension 'ignore'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/robot) by extension 'ignore_ament_install'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/robot) by extensions ['colcon_pkg']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/robot) by extension 'colcon_pkg'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/robot) by extensions ['colcon_meta']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/robot) by extension 'colcon_meta'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/robot) by extensions ['ros']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/robot) by extension 'ros'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/robot) by extensions ['cmake', 'python']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/robot) by extension 'cmake'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/robot) by extension 'python'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/robot) by extensions ['python_setup_py']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(scripts/robot) by extension 'python_setup_py'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_collector) by extensions ['ignore', 'ignore_ament_install']
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_collector) by extension 'ignore'
+[0.106s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_collector) by extension 'ignore_ament_install'
+[0.107s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_collector) by extensions ['colcon_pkg']
+[0.107s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_collector) by extension 'colcon_pkg'
+[0.107s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_collector) by extensions ['colcon_meta']
+[0.107s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_collector) by extension 'colcon_meta'
+[0.107s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_collector) by extensions ['ros']
+[0.107s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_collector) by extension 'ros'
+[0.108s] DEBUG:colcon.colcon_core.package_identification:Package 'src/fb_collector' with type 'ros.ament_python' and name 'fb_collector'
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_launcher) by extensions ['ignore', 'ignore_ament_install']
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_launcher) by extension 'ignore'
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_launcher) by extension 'ignore_ament_install'
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_launcher) by extensions ['colcon_pkg']
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_launcher) by extension 'colcon_pkg'
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_launcher) by extensions ['colcon_meta']
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_launcher) by extension 'colcon_meta'
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_launcher) by extensions ['ros']
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_launcher) by extension 'ros'
+[0.108s] DEBUG:colcon.colcon_core.package_identification:Package 'src/fb_launcher' with type 'ros.ament_python' and name 'fb_launcher'
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_mobility) by extensions ['ignore', 'ignore_ament_install']
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_mobility) by extension 'ignore'
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_mobility) by extension 'ignore_ament_install'
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_mobility) by extensions ['colcon_pkg']
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_mobility) by extension 'colcon_pkg'
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_mobility) by extensions ['colcon_meta']
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_mobility) by extension 'colcon_meta'
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_mobility) by extensions ['ros']
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_mobility) by extension 'ros'
+[0.108s] DEBUG:colcon.colcon_core.package_identification:Package 'src/fb_mobility' with type 'ros.ament_python' and name 'fb_mobility'
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_planning) by extensions ['ignore', 'ignore_ament_install']
+[0.108s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_planning) by extension 'ignore'
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_planning) by extension 'ignore_ament_install'
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_planning) by extensions ['colcon_pkg']
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_planning) by extension 'colcon_pkg'
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_planning) by extensions ['colcon_meta']
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_planning) by extension 'colcon_meta'
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_planning) by extensions ['ros']
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_planning) by extension 'ros'
+[0.109s] DEBUG:colcon.colcon_core.package_identification:Package 'src/fb_planning' with type 'ros.ament_python' and name 'fb_planning'
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_vision) by extensions ['ignore', 'ignore_ament_install']
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_vision) by extension 'ignore'
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_vision) by extension 'ignore_ament_install'
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_vision) by extensions ['colcon_pkg']
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_vision) by extension 'colcon_pkg'
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_vision) by extensions ['colcon_meta']
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_vision) by extension 'colcon_meta'
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_vision) by extensions ['ros']
+[0.109s] Level 1:colcon.colcon_core.package_identification:_identify(src/fb_vision) by extension 'ros'
+[0.109s] DEBUG:colcon.colcon_core.package_identification:Package 'src/fb_vision' with type 'ros.ament_python' and name 'fb_vision'
+[0.109s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.109s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.109s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.109s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.109s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.119s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'fb_launcher' in 'src/fb_launcher'
+[0.119s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'fb_mobility' in 'src/fb_mobility'
+[0.119s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'fb_planning' in 'src/fb_planning'
+[0.119s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'fb_vision' in 'src/fb_vision'
+[0.120s] Level 5:colcon.colcon_core.verb:set package 'fb_collector' build argument 'cmake_args' from command line to 'None'
+[0.120s] Level 5:colcon.colcon_core.verb:set package 'fb_collector' build argument 'cmake_target' from command line to 'None'
+[0.120s] Level 5:colcon.colcon_core.verb:set package 'fb_collector' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.120s] Level 5:colcon.colcon_core.verb:set package 'fb_collector' build argument 'cmake_clean_cache' from command line to 'False'
+[0.120s] Level 5:colcon.colcon_core.verb:set package 'fb_collector' build argument 'cmake_clean_first' from command line to 'False'
+[0.120s] Level 5:colcon.colcon_core.verb:set package 'fb_collector' build argument 'cmake_force_configure' from command line to 'False'
+[0.120s] Level 5:colcon.colcon_core.verb:set package 'fb_collector' build argument 'ament_cmake_args' from command line to 'None'
+[0.120s] Level 5:colcon.colcon_core.verb:set package 'fb_collector' build argument 'catkin_cmake_args' from command line to 'None'
+[0.120s] Level 5:colcon.colcon_core.verb:set package 'fb_collector' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.120s] DEBUG:colcon.colcon_core.verb:Building package 'fb_collector' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_collector', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector', 'merge_install': False, 'path': '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/src/fb_collector', 'symlink_install': True, 'test_result_base': None}
+[0.120s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.120s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.120s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/src/fb_collector' with build type 'ament_python'
+[0.121s] Level 1:colcon.colcon_core.shell:create_environment_hook('fb_collector', 'ament_prefix_path')
+[0.121s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.121s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/fb_collector/hook/ament_prefix_path.ps1'
+[0.122s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/fb_collector/hook/ament_prefix_path.dsv'
+[0.122s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/fb_collector/hook/ament_prefix_path.sh'
+[0.123s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.123s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.222s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/src/fb_collector'
+[0.222s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.222s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.436s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_collector': CONDA_PROMPT_MODIFIER=(frisbee_env) PYTHONPATH=/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_collector/prefix_override:/home/mmliu/miniconda3/envs/frisbee_env/lib/python3.10/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/lib/python3.10/site-packages:${PYTHONPATH} /home/mmliu/miniconda3/envs/frisbee_env/bin/python3.10 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_collector/build --no-deps symlink_data
+[0.679s] Level 1:colcon.colcon_core.shell:create_environment_hook('fb_collector', 'pythonpath_develop')
+[0.680s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_collector/share/fb_collector/hook/pythonpath_develop.ps1'
+[0.681s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_collector' returned '0': CONDA_PROMPT_MODIFIER=(frisbee_env) PYTHONPATH=/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_collector/prefix_override:/home/mmliu/miniconda3/envs/frisbee_env/lib/python3.10/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/lib/python3.10/site-packages:${PYTHONPATH} /home/mmliu/miniconda3/envs/frisbee_env/bin/python3.10 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_collector/build --no-deps symlink_data
+[0.681s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_collector/share/fb_collector/hook/pythonpath_develop.dsv'
+[0.681s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_collector/share/fb_collector/hook/pythonpath_develop.sh'
+[0.683s] Level 1:colcon.colcon_core.environment:checking '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector' for CMake module files
+[0.683s] Level 1:colcon.colcon_core.environment:checking '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector' for CMake config files
+[0.683s] Level 1:colcon.colcon_core.environment:checking '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/lib'
+[0.683s] Level 1:colcon.colcon_core.environment:checking '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/bin'
+[0.684s] Level 1:colcon.colcon_core.environment:checking '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/lib/pkgconfig/fb_collector.pc'
+[0.684s] Level 1:colcon.colcon_core.environment:checking '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/lib/python3.10/site-packages'
+[0.684s] Level 1:colcon.colcon_core.shell:create_environment_hook('fb_collector', 'pythonpath')
+[0.684s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/fb_collector/hook/pythonpath.ps1'
+[0.685s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/fb_collector/hook/pythonpath.dsv'
+[0.685s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/fb_collector/hook/pythonpath.sh'
+[0.686s] Level 1:colcon.colcon_core.environment:checking '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/bin'
+[0.686s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(fb_collector)
+[0.686s] INFO:colcon.colcon_core.shell:Creating package script '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/fb_collector/package.ps1'
+[0.687s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/fb_collector/package.dsv'
+[0.687s] INFO:colcon.colcon_core.shell:Creating package script '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/fb_collector/package.sh'
+[0.688s] INFO:colcon.colcon_core.shell:Creating package script '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/fb_collector/package.bash'
+[0.689s] INFO:colcon.colcon_core.shell:Creating package script '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/fb_collector/package.zsh'
+[0.690s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_collector/share/colcon-core/packages/fb_collector)
+[0.690s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[0.690s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[0.690s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[0.690s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[0.691s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.notify2': 'notify2' not found
+[0.691s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[0.691s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[0.691s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify_send'
+[0.707s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[0.707s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/local_setup.ps1'
+[0.708s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/_local_setup_util_ps1.py'
+[0.709s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/setup.ps1'
+[0.710s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/local_setup.sh'
+[0.711s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/_local_setup_util_sh.py'
+[0.712s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/setup.sh'
+[0.713s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/local_setup.bash'
+[0.713s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/setup.bash'
+[0.714s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/local_setup.zsh'
+[0.715s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/setup.zsh'

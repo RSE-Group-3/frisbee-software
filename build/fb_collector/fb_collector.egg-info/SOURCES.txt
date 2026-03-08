@@ -1,0 +1,13 @@
+package.xml
+setup.cfg
+setup.py
+fb_collector/__init__.py
+fb_collector/collector_node.py
+fb_collector.egg-info/PKG-INFO
+fb_collector.egg-info/SOURCES.txt
+fb_collector.egg-info/dependency_links.txt
+fb_collector.egg-info/entry_points.txt
+fb_collector.egg-info/requires.txt
+fb_collector.egg-info/top_level.txt
+fb_collector.egg-info/zip-safe
+resource/fb_collector

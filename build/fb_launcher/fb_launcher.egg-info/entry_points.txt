@@ -1,0 +1,2 @@
+[console_scripts]
+launcher_node = fb_launcher.launcher_node:main
