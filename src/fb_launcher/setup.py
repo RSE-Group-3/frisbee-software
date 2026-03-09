@@ -22,7 +22,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'launcher_node = fb_launcher.launcher_node:main',
+            'launcher_if_node = fb_launcher.launcher_if_node:main',
         ],
     },
 )

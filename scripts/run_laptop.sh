@@ -24,6 +24,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 
+conda activate frisbee_env
 
 if [ "$BUILD" = "true" ]; then
   echo "Building workspace..."

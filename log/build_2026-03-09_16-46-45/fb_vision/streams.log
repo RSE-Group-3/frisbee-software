@@ -1,0 +1,23 @@
+[0.826s] Invoking command in '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_vision': CONDA_PROMPT_MODIFIER=(frisbee_env) PYTHONPATH=/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_vision/prefix_override:/home/mmliu/miniconda3/envs/frisbee_env/lib/python3.10/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_vision/lib/python3.10/site-packages:${PYTHONPATH} /home/mmliu/miniconda3/envs/frisbee_env/bin/python3.10 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_vision/build --no-deps symlink_data
+[1.012s] running develop
+[1.112s] running egg_info
+[1.121s] creating fb_vision.egg-info
+[1.121s] writing fb_vision.egg-info/PKG-INFO
+[1.125s] writing dependency_links to fb_vision.egg-info/dependency_links.txt
+[1.125s] writing entry points to fb_vision.egg-info/entry_points.txt
+[1.125s] writing requirements to fb_vision.egg-info/requires.txt
+[1.125s] writing top-level names to fb_vision.egg-info/top_level.txt
+[1.125s] writing manifest file 'fb_vision.egg-info/SOURCES.txt'
+[1.141s] reading manifest file 'fb_vision.egg-info/SOURCES.txt'
+[1.142s] writing manifest file 'fb_vision.egg-info/SOURCES.txt'
+[1.152s] running build_ext
+[1.152s] Creating /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_vision/lib/python3.10/site-packages/fb-vision.egg-link (link to .)
+[1.153s] Installing air_tracker_node script to /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_vision/lib/fb_vision
+[1.153s] Installing ground_tracker_node script to /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_vision/lib/fb_vision
+[1.154s] 
+[1.154s] Installed /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_vision
+[1.154s] running symlink_data
+[1.154s] creating /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_vision/share/ament_index/resource_index/packages
+[1.154s] symbolically linking /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_vision/resource/fb_vision -> /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_vision/share/ament_index/resource_index/packages
+[1.154s] symbolically linking /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_vision/package.xml -> /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_vision/share/fb_vision
+[1.191s] Invoked command in '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_vision' returned '0': CONDA_PROMPT_MODIFIER=(frisbee_env) PYTHONPATH=/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_vision/prefix_override:/home/mmliu/miniconda3/envs/frisbee_env/lib/python3.10/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_vision/lib/python3.10/site-packages:${PYTHONPATH} /home/mmliu/miniconda3/envs/frisbee_env/bin/python3.10 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_vision/build --no-deps symlink_data

@@ -26,6 +26,7 @@ pip install setuptools colcon-common-extensions empy lark-parser
 # Other dependencies:
 echo "Installing other dependencies..."
 conda install -y -n "$ENV_NAME" opencv numpy matplotlib
+pip install pyserial
 
 # Done
 echo "Conda environment '$ENV_NAME' setup complete!"

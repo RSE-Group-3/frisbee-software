@@ -1,0 +1,22 @@
+[0.849s] Invoking command in '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_launcher': CONDA_PROMPT_MODIFIER=(frisbee_env) PYTHONPATH=/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_launcher/prefix_override:/home/mmliu/miniconda3/envs/frisbee_env/lib/python3.10/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_launcher/lib/python3.10/site-packages:${PYTHONPATH} /home/mmliu/miniconda3/envs/frisbee_env/bin/python3.10 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_launcher/build --no-deps symlink_data
+[1.031s] running develop
+[1.142s] running egg_info
+[1.152s] creating fb_launcher.egg-info
+[1.153s] writing fb_launcher.egg-info/PKG-INFO
+[1.154s] writing dependency_links to fb_launcher.egg-info/dependency_links.txt
+[1.154s] writing entry points to fb_launcher.egg-info/entry_points.txt
+[1.154s] writing requirements to fb_launcher.egg-info/requires.txt
+[1.154s] writing top-level names to fb_launcher.egg-info/top_level.txt
+[1.154s] writing manifest file 'fb_launcher.egg-info/SOURCES.txt'
+[1.175s] reading manifest file 'fb_launcher.egg-info/SOURCES.txt'
+[1.176s] writing manifest file 'fb_launcher.egg-info/SOURCES.txt'
+[1.189s] running build_ext
+[1.192s] Creating /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_launcher/lib/python3.10/site-packages/fb-launcher.egg-link (link to .)
+[1.192s] Installing launcher_if_node script to /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_launcher/lib/fb_launcher
+[1.192s] 
+[1.192s] Installed /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_launcher
+[1.193s] running symlink_data
+[1.193s] creating /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_launcher/share/ament_index/resource_index/packages
+[1.193s] symbolically linking /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_launcher/resource/fb_launcher -> /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_launcher/share/ament_index/resource_index/packages
+[1.193s] symbolically linking /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_launcher/package.xml -> /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_launcher/share/fb_launcher
+[1.238s] Invoked command in '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_launcher' returned '0': CONDA_PROMPT_MODIFIER=(frisbee_env) PYTHONPATH=/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_launcher/prefix_override:/home/mmliu/miniconda3/envs/frisbee_env/lib/python3.10/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_launcher/lib/python3.10/site-packages:${PYTHONPATH} /home/mmliu/miniconda3/envs/frisbee_env/bin/python3.10 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_launcher/build --no-deps symlink_data

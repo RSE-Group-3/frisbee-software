@@ -31,6 +31,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 
+conda activate frisbee_env
 
 if [ "$BUILD" = "true" ]; then
   echo "Building workspace..."
@@ -40,18 +41,33 @@ fi
 tmux kill-server
 
 
+run_launcher_manual() {
+  ./scripts/robot/upload_ino.sh
+  ./scripts/robot/launcher_interface.sh --manual
+}
+
+run_collector_manual() {
+  ./scripts/robot/upload_ino.sh
+  ./scripts/robot/collector_interface.sh --manual
+}
 
 run_launcher() {
-  ./scripts/robot/launch_launcher_hardware.sh
+  ./scripts/robot/upload_ino.sh
+  ./scripts/robot/launcher_interface.sh
 }
 
 run_collector() {
-  ./scripts/robot/launch_collector_hardware.sh
+  ./scripts/robot/upload_ino.sh
+  ./scripts/robot/collector_interface.sh
 }
 
 run_mobility() {
   # Add command to run mobility mode here
   echo "Mobility mode not implemented yet"
+}
+
+run_hardware_utils() {
+  ./scripts/robot/arduino_bridge.sh
 }
 
 run_vision() {
@@ -66,6 +82,7 @@ run_vision() {
 case "$MODE" in
   "all")
     echo "Running everything..."
+    run_hardware_utils &
     run_launcher &
     run_collector &
     run_mobility &
@@ -77,15 +94,18 @@ case "$MODE" in
     ;;
   "launcher")
     echo "Running launcher-only mode..."
-    run_launcher
+    run_hardware_utils &
+    run_launcher_manual
     ;;
   "collector")
     echo "Running collector-only mode..."
-    run_collector
+    run_hardware_utils &
+    run_collector_manual
     ;;
   "mobility")
     echo "Running mobility-only mode..."
-    run_mobility
+    run_hardware_utils &
+    run_mobility_manual
     ;;
   *)
     echo "Unknown mode: $MODE"

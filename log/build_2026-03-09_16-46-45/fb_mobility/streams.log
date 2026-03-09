@@ -1,0 +1,20 @@
+[0.838s] Invoking command in '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_mobility': CONDA_PROMPT_MODIFIER=(frisbee_env) PYTHONPATH=/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_mobility/prefix_override:/home/mmliu/miniconda3/envs/frisbee_env/lib/python3.10/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_mobility/lib/python3.10/site-packages:${PYTHONPATH} /home/mmliu/miniconda3/envs/frisbee_env/bin/python3.10 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_mobility/build --no-deps symlink_data
+[1.012s] running develop
+[1.116s] running egg_info
+[1.122s] creating fb_mobility.egg-info
+[1.122s] writing fb_mobility.egg-info/PKG-INFO
+[1.122s] writing dependency_links to fb_mobility.egg-info/dependency_links.txt
+[1.122s] writing requirements to fb_mobility.egg-info/requires.txt
+[1.122s] writing top-level names to fb_mobility.egg-info/top_level.txt
+[1.122s] writing manifest file 'fb_mobility.egg-info/SOURCES.txt'
+[1.139s] reading manifest file 'fb_mobility.egg-info/SOURCES.txt'
+[1.140s] writing manifest file 'fb_mobility.egg-info/SOURCES.txt'
+[1.151s] running build_ext
+[1.151s] Creating /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_mobility/lib/python3.10/site-packages/fb-mobility.egg-link (link to .)
+[1.151s] 
+[1.152s] Installed /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_mobility
+[1.152s] running symlink_data
+[1.152s] creating /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_mobility/share/ament_index/resource_index/packages
+[1.152s] symbolically linking /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_mobility/resource/fb_mobility -> /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_mobility/share/ament_index/resource_index/packages
+[1.152s] symbolically linking /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_mobility/package.xml -> /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_mobility/share/fb_mobility
+[1.180s] Invoked command in '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_mobility' returned '0': CONDA_PROMPT_MODIFIER=(frisbee_env) PYTHONPATH=/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_mobility/prefix_override:/home/mmliu/miniconda3/envs/frisbee_env/lib/python3.10/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_mobility/lib/python3.10/site-packages:${PYTHONPATH} /home/mmliu/miniconda3/envs/frisbee_env/bin/python3.10 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_mobility/build --no-deps symlink_data

@@ -2,19 +2,13 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 
+import time
+
 class CollectorNode(Node):
     def __init__(self):
-        super().__init__('collector_node')
+        super().__init__('collector_control_node')
         
-        self.cmd_sub = self.create_subscription(
-            String, 
-            'collector/interface/cmd', 
-            self.collector_cmd_callback, 
-            10)
-        
-        self.event_pub = self.create_publisher(String, 'robot/events', 10)
-        
-        self.get_logger().info("Collector Subsystem Hardware Interface Online")
+        pass
 
     def collector_cmd_callback(self, msg):
         command = msg.data
@@ -29,7 +23,6 @@ class CollectorNode(Node):
     def run_intake_sequence(self):
         # Need to fill the hardware logic here
         self.get_logger().info("HARDWARE: Spinning Intake Motors at 80% Power...")
-        import time
         time.sleep(5.0) 
 
         self.get_logger().info("HARDWARE: Intake Complete!")

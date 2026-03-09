@@ -1,0 +1,24 @@
+[0.852s] Invoking command in '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_planning': CONDA_PROMPT_MODIFIER=(frisbee_env) PYTHONPATH=/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_planning/prefix_override:/home/mmliu/miniconda3/envs/frisbee_env/lib/python3.10/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_planning/lib/python3.10/site-packages:${PYTHONPATH} /home/mmliu/miniconda3/envs/frisbee_env/bin/python3.10 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_planning/build --no-deps symlink_data
+[1.046s] running develop
+[1.161s] running egg_info
+[1.175s] creating fb_planning.egg-info
+[1.176s] writing fb_planning.egg-info/PKG-INFO
+[1.176s] writing dependency_links to fb_planning.egg-info/dependency_links.txt
+[1.176s] writing entry points to fb_planning.egg-info/entry_points.txt
+[1.176s] writing requirements to fb_planning.egg-info/requires.txt
+[1.176s] writing top-level names to fb_planning.egg-info/top_level.txt
+[1.176s] writing manifest file 'fb_planning.egg-info/SOURCES.txt'
+[1.196s] reading manifest file 'fb_planning.egg-info/SOURCES.txt'
+[1.197s] writing manifest file 'fb_planning.egg-info/SOURCES.txt'
+[1.206s] running build_ext
+[1.206s] Creating /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_planning/lib/python3.10/site-packages/fb-planning.egg-link (link to .)
+[1.206s] Installing central_planner script to /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_planning/lib/fb_planning
+[1.206s] Installing state_machine script to /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_planning/lib/fb_planning
+[1.209s] 
+[1.209s] Installed /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_planning
+[1.209s] running symlink_data
+[1.209s] creating /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_planning/share/ament_index/resource_index/packages
+[1.209s] symbolically linking /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_planning/resource/fb_planning -> /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_planning/share/ament_index/resource_index/packages
+[1.209s] symbolically linking /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_planning/package.xml -> /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_planning/share/fb_planning
+[1.209s] creating /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_planning/share/fb_planning/launch
+[1.247s] Invoked command in '/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_planning' returned '0': CONDA_PROMPT_MODIFIER=(frisbee_env) PYTHONPATH=/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_planning/prefix_override:/home/mmliu/miniconda3/envs/frisbee_env/lib/python3.10/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/install/fb_planning/lib/python3.10/site-packages:${PYTHONPATH} /home/mmliu/miniconda3/envs/frisbee_env/bin/python3.10 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_planning/build --no-deps symlink_data

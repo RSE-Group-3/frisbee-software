@@ -4,7 +4,7 @@
   <name>fb_vision</name>
   <version>0.1.0</version>
   <description>Frisbee vision</description>
-  <maintainer email="juncheng@andrew.cmu.edu">Tony Lu</maintainer>
+  <maintainer email="mmliu@andrew.cmu.edu">mmliu</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_python</buildtool_depend>
