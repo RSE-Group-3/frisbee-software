@@ -1,14 +1,17 @@
 FROM ros:humble
 
 RUN apt update && apt install -y \
+    python3-pip \
+    tmux \
+    && rm -rf /var/lib/apt/lists/*
+    
+RUN apt update && apt install -y \
+    ros-humble-foxglove-bridge \
+    ros-humble-usb-cam ros-humble-image-tools \
     python3-opencv \
     ros-humble-cv-bridge \
     ros-humble-image-transport \
     ros-humble-image-transport-plugins \
-    python3-pip \
-    tmux \
-    ros-humble-foxglove-bridge \
-    ros-humble-usb-cam ros-humble-image-tools \
     && rm -rf /var/lib/apt/lists/*
 
 # Create workspace
