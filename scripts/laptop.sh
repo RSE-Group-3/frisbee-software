@@ -1,2 +1,2 @@
-source ./scripts/build_laptop.sh
-source ./scripts/run_laptop.sh
+./scripts/build_laptop.sh
+./scripts/run_laptop.sh

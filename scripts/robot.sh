@@ -1,2 +1,2 @@
-source ./scripts/build_robot.sh
-source ./scripts/run_robot.sh
+./scripts/build_robot.sh
+./scripts/run_robot.sh

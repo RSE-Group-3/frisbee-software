@@ -2,7 +2,6 @@
 
 tmux kill-server
 
-./scripts/sessions_robot/launch_cameras.sh
 ./scripts/sessions_robot/arduino_bridge.sh
 
 ./scripts/sessions_robot/mobility_if.sh
