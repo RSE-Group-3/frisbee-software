@@ -27,7 +27,6 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'state_machine = fb_planning.task_planning.state_machine:main',
             'central_planner = fb_planning.task_planning.central_planner:main',
         ],
     },

@@ -1,48 +1,50 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String, Bool
+from std_msgs.msg import String, Bool, Int32
 from geometry_msgs.msg import PoseStamped
+from fb_utils.fb_msgs import LauncherCmd, LauncherAck, CollectorCmd, CollectorAck
+
+from enum import IntEnum
+
+class PlannerMode(IntEnum):
+    STARTUP = 0
+    LISTENING = 1
+    SEARCHING = 2
+    COLLECTING = 3
+    RETURNING = 4
+    LAUNCHING = 5
+    SAFESTOP = 6
 
 class CentralPlanner(Node):
     def __init__(self):
         super().__init__('central_planner')
         
-        self.current_state = "MODE_STARTUP"
-        
-        self.launcher_cmd = self.create_publisher(String, 'launcher/interface/cmd', 10)
-        self.collector_cmd = self.create_publisher(String, 'collector/interface/cmd', 10)
-        self.path_goal_pub = self.create_publisher(PoseStamped, 'path_planner/goal', 10)
-        
-        self.create_subscription(String, 'robot/current_state', self.state_cb, 10)
-        self.create_subscription(PoseStamped, 'perception/frisbee_pose', self.frisbee_cb, 10)
+        self.arduino_cmd_pub = self.create_publisher(Int32, 'arduino/cmd', 10)
+        self.arduino_ack_sub = self.create_subscription(Int32, 'arduino/ack', self.arduino_callback, 10)
+
+        self.launcher_cmd_pub = self.create_publisher(Int32, 'launcher/cmd', 10)
+        self.launcher_ack_sub = self.create_subscription(Int32, 'launcher/status', self.launcher_callback, 10)
+        self.collector_cmd_pub = self.create_publisher(Int32, 'collector/cmd', 10)
+        self.collector_ack_sub = self.create_subscription(Int32, 'collector/status', self.collector_callback, 10)
         
         self.create_timer(0.1, self.planner_loop)
 
-    def state_cb(self, msg):
-        self.current_state = msg.data
-
-    def frisbee_cb(self, msg):
-        if self.current_state in ["MODE_SEARCHING", "MODE_COLLECTING"]:
-            self.path_goal_pub.publish(msg)
+        self.state = PlannerMode.STARTUP
 
     def planner_loop(self):
-        if self.current_state == "MODE_COLLECTING":
-            # Command Collector Interface to prepare for intake
-            self.collector_cmd.publish(String(data="prepare_intake"))
+        cmd = int(input("0 to reset, 1 to launch: "))
+        assert cmd == 0 or cmd == 1
+        self.launcher_cmd_pub.publish(Int32(data=cmd))
             
-        elif self.current_state == "MODE_LAUNCHING":
-            # Command Launcher Interface to execute throw
-            self.launcher_cmd.publish(String(data="initiate_launch_sequence"))
-            
-        elif self.current_state == "MODE_RETURNING":
-            # Send home coordinates to Mobility Subsystem
-            home_pose = PoseStamped() # Assume origin for this example
-            self.path_goal_pub.publish(home_pose)
-            
-        elif self.current_state == "MODE_SAFESTOP":
-            # Stop all actuators across subsystems
-            self.launcher_cmd.publish(String(data="emergency_halt"))
-            self.collector_cmd.publish(String(data="emergency_halt"))
+
+    def launcher_callback(self, msg):
+        pass
+        
+    def collector_callback(self, msg):
+        pass
+    
+    def arduino_callback(self, msg):
+        pass
 
 def main(args=None):
     rclpy.init(args=args)
