@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SESSION="central_planner"
+SESSION="navigation"
 
 # Kill existing session if it exists
 tmux has-session -t $SESSION 2>/dev/null

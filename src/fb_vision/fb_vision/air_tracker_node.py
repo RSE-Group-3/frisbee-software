@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import CompressedImage
 
 import cv2
 from cv_bridge import CvBridge
@@ -11,8 +11,8 @@ class AirTrackerNode(Node):
         super().__init__('air_tracker_node')
         
         self.front_image_sub = self.create_subscription(
-            Image,
-            'front_robot_cam/image_raw',
+            CompressedImage,
+            '/image_raw/compressed',
             self.image_callback,
             10
         )
@@ -28,7 +28,7 @@ class AirTrackerNode(Node):
         # Convert ROS Image message to OpenCV format
         bridge = CvBridge()
         try:
-            cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+            cv_image = bridge.compressed_imgmsg_to_cv2(msg, desired_encoding='bgr8')
         except Exception as e:
             self.get_logger().error(f"Error converting image: {e}")
             return

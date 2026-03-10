@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# example usage: ./scripts/run_robot.sh --build
-
 BUILD="false"
 [[ "$1" == "--build" ]] && BUILD="true"
 [[ $# -gt 1 ]] && { echo "Too many arguments"; print_help; exit 1; }
@@ -13,9 +11,13 @@ fi
 
 tmux kill-server
 
-./scripts/laptop/foxglove_bridge.sh
-./scripts/laptop/central_planner.sh
-./scripts/laptop/vision_models.sh
+./scripts/sessions_laptop/foxglove_bridge.sh
+
+./scripts/sessions_laptop/central_planner.sh
+./scripts/sessions_laptop/path_planner.sh
+
+./scripts/sessions_laptop/vision_models.sh
+./scripts/sessions_laptop/launch_cameras.sh
 
 sleep 1
 tmux attach
