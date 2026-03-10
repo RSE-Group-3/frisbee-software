@@ -13,4 +13,5 @@ tmux new-session -d -s $SESSION
 # tmux split-window -h -t $SESSION
 
 tmux send-keys -t $SESSION:0.0 "source install/setup.bash" C-m
-tmux send-keys -t $SESSION:0.0 "ros2 run fb_hardware_if launcher_if_node" C-m
+tmux send-keys -t $SESSION:0.0 "ros2 run fb_hardware_if launcher_if_node \
+                                --ros-args -p hardware:=true" C-m
