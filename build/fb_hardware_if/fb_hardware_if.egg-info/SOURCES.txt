@@ -1,0 +1,13 @@
+package.xml
+setup.cfg
+setup.py
+fb_hardware_if/__init__.py
+fb_hardware_if/arduino_bridge_node.py
+fb_hardware_if.egg-info/PKG-INFO
+fb_hardware_if.egg-info/SOURCES.txt
+fb_hardware_if.egg-info/dependency_links.txt
+fb_hardware_if.egg-info/entry_points.txt
+fb_hardware_if.egg-info/requires.txt
+fb_hardware_if.egg-info/top_level.txt
+fb_hardware_if.egg-info/zip-safe
+resource/fb_hardware_if

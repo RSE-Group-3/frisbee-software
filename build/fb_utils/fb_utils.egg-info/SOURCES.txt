@@ -2,12 +2,10 @@ package.xml
 setup.cfg
 setup.py
 fb_utils/__init__.py
-fb_utils/arduino_bridge_node.py
 fb_utils/fb_msgs.py
 fb_utils.egg-info/PKG-INFO
 fb_utils.egg-info/SOURCES.txt
 fb_utils.egg-info/dependency_links.txt
-fb_utils.egg-info/entry_points.txt
 fb_utils.egg-info/requires.txt
 fb_utils.egg-info/top_level.txt
 fb_utils.egg-info/zip-safe

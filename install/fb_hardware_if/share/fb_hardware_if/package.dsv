@@ -1,0 +1,9 @@
+source;share/fb_hardware_if/hook/pythonpath.ps1
+source;share/fb_hardware_if/hook/pythonpath.dsv
+source;share/fb_hardware_if/hook/pythonpath.sh
+source;share/fb_hardware_if/hook/ament_prefix_path.ps1
+source;share/fb_hardware_if/hook/ament_prefix_path.dsv
+source;share/fb_hardware_if/hook/ament_prefix_path.sh
+source;../../build/fb_hardware_if/share/fb_hardware_if/hook/pythonpath_develop.ps1
+source;../../build/fb_hardware_if/share/fb_hardware_if/hook/pythonpath_develop.dsv
+source;../../build/fb_hardware_if/share/fb_hardware_if/hook/pythonpath_develop.sh

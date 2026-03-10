@@ -1,0 +1,4 @@
+[console_scripts]
+arduino_bridge_node = fb_hardware_if.arduino_bridge_node:main
+collector_if_node = fb_hardware_if.collector.collector_if_node:main
+launcher_if_node = fb_hardware_if.launcher.launcher_if_node:main

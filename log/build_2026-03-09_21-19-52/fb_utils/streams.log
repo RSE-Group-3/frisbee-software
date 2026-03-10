@@ -1,0 +1,20 @@
+[3.288s] Invoking command in '/home/frisbee/ros2_ws/src/frisbee-software/build/fb_utils': CONDA_PROMPT_MODIFIER=(frisbee_env) PYTHONPATH=/home/frisbee/ros2_ws/src/frisbee-software/build/fb_utils/prefix_override:/home/frisbee/miniconda3/envs/frisbee_env/lib/python3.10/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/frisbee/ros2_ws/src/frisbee-software/install/fb_utils/lib/python3.10/site-packages:${PYTHONPATH} /home/frisbee/miniconda3/envs/frisbee_env/bin/python3.10 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/frisbee/ros2_ws/src/frisbee-software/build/fb_utils/build --no-deps symlink_data
+[4.907s] running develop
+[5.728s] running egg_info
+[5.792s] creating fb_utils.egg-info
+[5.793s] writing fb_utils.egg-info/PKG-INFO
+[5.796s] writing dependency_links to fb_utils.egg-info/dependency_links.txt
+[5.798s] writing requirements to fb_utils.egg-info/requires.txt
+[5.799s] writing top-level names to fb_utils.egg-info/top_level.txt
+[5.800s] writing manifest file 'fb_utils.egg-info/SOURCES.txt'
+[5.931s] reading manifest file 'fb_utils.egg-info/SOURCES.txt'
+[5.936s] writing manifest file 'fb_utils.egg-info/SOURCES.txt'
+[6.008s] running build_ext
+[6.008s] Creating /home/frisbee/ros2_ws/src/frisbee-software/install/fb_utils/lib/python3.10/site-packages/fb-utils.egg-link (link to .)
+[6.012s] 
+[6.013s] Installed /home/frisbee/ros2_ws/src/frisbee-software/build/fb_utils
+[6.013s] running symlink_data
+[6.014s] creating /home/frisbee/ros2_ws/src/frisbee-software/install/fb_utils/share/ament_index/resource_index/packages
+[6.015s] symbolically linking /home/frisbee/ros2_ws/src/frisbee-software/build/fb_utils/resource/fb_utils -> /home/frisbee/ros2_ws/src/frisbee-software/install/fb_utils/share/ament_index/resource_index/packages
+[6.017s] symbolically linking /home/frisbee/ros2_ws/src/frisbee-software/build/fb_utils/package.xml -> /home/frisbee/ros2_ws/src/frisbee-software/install/fb_utils/share/fb_utils
+[6.170s] Invoked command in '/home/frisbee/ros2_ws/src/frisbee-software/build/fb_utils' returned '0': CONDA_PROMPT_MODIFIER=(frisbee_env) PYTHONPATH=/home/frisbee/ros2_ws/src/frisbee-software/build/fb_utils/prefix_override:/home/frisbee/miniconda3/envs/frisbee_env/lib/python3.10/site-packages/colcon_core/task/python/colcon_distutils_commands:/home/frisbee/ros2_ws/src/frisbee-software/install/fb_utils/lib/python3.10/site-packages:${PYTHONPATH} /home/frisbee/miniconda3/envs/frisbee_env/bin/python3.10 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/frisbee/ros2_ws/src/frisbee-software/build/fb_utils/build --no-deps symlink_data

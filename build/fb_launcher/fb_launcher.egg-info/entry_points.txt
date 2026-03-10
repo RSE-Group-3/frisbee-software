@@ -1,2 +1,0 @@
-[console_scripts]
-launcher_if_node = fb_launcher.launcher_if_node:main

@@ -1,3 +1,3 @@
 # generated from colcon_core/shell/template/hook_prepend_value.sh.em
 
-_colcon_prepend_unique_value PYTHONPATH "/home/mmliu/Documents/cmu/16450-Capstone/frisbee-software/build/fb_utils"
+_colcon_prepend_unique_value PYTHONPATH "/home/frisbee/ros2_ws/src/frisbee-software/build/fb_utils"

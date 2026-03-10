@@ -22,7 +22,6 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'arduino_bridge_node = fb_utils.arduino_bridge_node:main',
         ],
     },
 )

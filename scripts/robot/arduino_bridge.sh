@@ -10,7 +10,8 @@ fi
 
 tmux new-session -d -s $SESSION
 
-tmux send-keys -t $SESSION:0.0 "conda activate frisbee_env" C-m
+# tmux split-window -h -t $SESSION
+
 tmux send-keys -t $SESSION:0.0 "source install/setup.bash" C-m
-tmux send-keys -t $SESSION:0.0 "ros2 run fb_utils arduino_bridge_node" C-m
+tmux send-keys -t $SESSION:0.0 "ros2 run fb_hardware_if arduino_bridge_node" C-m
 
