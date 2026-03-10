@@ -1,11 +1,10 @@
 #!/bin/bash
 
-# example usage: ./scripts/run_robot.sh --mode launcher --build --no_hardware
+# example usage: ./scripts/run_robot.sh --build
 
-MODE="all"
 BUILD="false"
-HARDWARE="true"
-
+[[ "$1" == "--build" ]] && BUILD="true"
+[[ $# -gt 1 ]] && { echo "Too many arguments"; print_help; exit 1; }
 
 if [ "$BUILD" = "true" ]; then
   echo "Building workspace..."
@@ -13,7 +12,6 @@ if [ "$BUILD" = "true" ]; then
 fi
 
 tmux kill-server
-
 
 ./scripts/robot/launch_cameras.sh
 ./scripts/robot/arduino_bridge.sh

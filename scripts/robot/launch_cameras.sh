@@ -37,3 +37,6 @@ tmux send-keys -t $SESSION:0.1 "ros2 run usb_cam usb_cam_node_exe \
   --ros-args --remap __ns:=/$CAMERA_BACK \
   -p video_device:=$DEVICE_BACK \
   -p pixel_format:='mjpeg2rgb'" C-m
+
+
+tmux send-keys -t $SESSION:0.2 "python set_camera_params.py $CAMERA_FRONT $CAMERA_BACK" C-m
