@@ -17,4 +17,5 @@ docker run --rm -it \
 --privileged \
 -v /dev:/dev \
 -v $(pwd):/ros2_ws \
+-e ROS_DOMAIN_ID=3 \
 frisbee_laptop
