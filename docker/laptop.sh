@@ -6,13 +6,15 @@ BUILD="true"
 if [ "$BUILD" = "true" ]; then
   cd ./docker/frisbee_laptop
   echo "Building docker file..."
-  sudo docker build -t frisbee_laptop .
+  docker build -t frisbee_laptop .
   cd ../..
 fi
 
 
-sudo docker run --rm -it \
+docker run --rm -it \
 --net=host \
 --ipc=host \
+--privileged \
+-v /dev:/dev \
 -v $(pwd):/ros2_ws \
 frisbee_laptop

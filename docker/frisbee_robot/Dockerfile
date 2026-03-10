@@ -13,5 +13,6 @@ COPY . /ros2_ws
 
 # Build workspace
 RUN . /opt/ros/humble/setup.sh
+RUN ./scripts/robot.sh
 
 CMD ["bash"]

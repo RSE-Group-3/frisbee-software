@@ -2,11 +2,15 @@
 
 DEVICE_FRONT="/dev/video2"
 CAMERA_FRONT="front_cam"
-
 DEVICE_BACK="/dev/video4"
 CAMERA_BACK="back_cam"
 
-EXPOSURE="200" # min=1 max=5000 step=1 default=157 value=50
+
+# CAMERAS=("$CAMERA_FRONT" "$CAMERA_BACK")
+# DEVICES=("$DEVICE_FRONT" "$DEVICE_BACK")
+
+CAMERAS=("$CAMERA_FRONT")
+DEVICES=("$DEVICE_FRONT")
 
 
 
@@ -24,11 +28,8 @@ tmux split-window -h -t $SESSION
 tmux split-window -v -t $SESSION:0.0
 
 
-CAMERAS=("$CAMERA_FRONT" "$CAMERA_BACK")
-DEVICES=("$DEVICE_FRONT" "$DEVICE_BACK")
-
 for i in "${!CAMERAS[@]}"; do
-  tmux send-keys -t $SESSION:0.0 "ros2 run usb_cam usb_cam_node_exe \
+  tmux send-keys -t $SESSION:0.$i "ros2 run usb_cam usb_cam_node_exe \
     --ros-args --remap __ns:=/${CAMERAS[$i]} \
     -p video_device:=${DEVICES[$i]} \
     -p framerate:=15.0 \
@@ -38,4 +39,4 @@ for i in "${!CAMERAS[@]}"; do
 done
 
 
-tmux send-keys -t $SESSION:0.2 "python ./scripts/laptop/utils/set_camera_params.py $DEVICE_FRONT $DEVICE_BACK" C-m
+tmux send-keys -t $SESSION:0.2 "python3 ./scripts/sessions_laptop/utils/set_camera_params.py $DEVICE_FRONT $DEVICE_BACK" C-m

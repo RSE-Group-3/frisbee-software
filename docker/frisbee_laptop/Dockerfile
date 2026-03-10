@@ -7,6 +7,8 @@ RUN apt update && apt install -y \
     ros-humble-image-transport-plugins \
     python3-pip \
     tmux \
+    ros-humble-foxglove-bridge \
+    ros-humble-usb-cam ros-humble-image-tools \
     && rm -rf /var/lib/apt/lists/*
 
 # Create workspace
