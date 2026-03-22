@@ -17,6 +17,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
 
         ('share/' + package_name + '/launch', glob(package_name + '/launch/*.py')),
+        ('share/' + package_name + '/utils', glob(package_name + '/utils/*.py')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

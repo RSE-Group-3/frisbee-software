@@ -1,1 +1,0 @@
-/ros2_ws/build/fb_gazebo/fb_gazebo/launch/sim.launch.py

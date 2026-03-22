@@ -46,8 +46,8 @@ if [ -f "$SETUP" ]; then
 fi
 EOF
 
-# Set up tmux 256-color configuration
-RUN echo 'set -g default-terminal "screen-256color"' >> /home/appuser/.tmux.conf \
- && echo 'set -g terminal-overrides "*:colors=256"' >> /home/appuser/.tmux.conf
+# # Set up tmux 256-color configuration
+# RUN echo 'set -g default-terminal "screen-256color"' >> /home/appuser/.tmux.conf \
+#  && echo 'set -g terminal-overrides "*:colors=256"' >> /home/appuser/.tmux.conf
 
 CMD ["bash", "-i"]

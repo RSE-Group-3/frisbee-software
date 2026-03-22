@@ -40,6 +40,9 @@ if [ "$SIM" = true ]; then
     ./src/fb_mobility/scripts/teleop.sh
 
     ./src/fb_manipulation/scripts/manipulation_sim.sh
+
+    sleep 1
+    tmux attach-session -t manipulation_sim
 else
     ./src/fb_bringup/scripts/arduino_bridge.sh
 
@@ -47,7 +50,8 @@ else
     ./src/fb_mobility/scripts/teleop.sh
 
     ./src/fb_manipulation/scripts/manipulation.sh
+
+    sleep 1
+    tmux attach-session -t manipulation
 fi
 
-sleep 1
-tmux attach

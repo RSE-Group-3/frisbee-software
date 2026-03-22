@@ -1,1 +1,0 @@
-/ros2_ws/src/fb_manipulation/setup.py

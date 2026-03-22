@@ -2,126 +2,124 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 from std_srvs.srv import Trigger
-from enum import IntEnum
 
-class PlannerMode(IntEnum):
-    IDLE = 0
-    LISTENING = 1
-    SEARCHING = 2
-    APPROACHING = 3
-    COLLECTING = 4
-    RETURNING = 5
-    LAUNCHING = 6
+import time
 
-VALID_TASKS = {
-    'listen': PlannerMode.LISTENING,
-    'search': PlannerMode.SEARCHING,
-    'approach': PlannerMode.APPROACHING,
-    'collect': PlannerMode.COLLECTING,
-    'return': PlannerMode.RETURNING,
-    'launch': PlannerMode.LAUNCHING
-}
+from ..utils.planner_utils import RobotStates
+from ..utils import planner_utils
 
 class CentralPlanner(Node):
     def __init__(self):
         super().__init__('central_planner')
 
+        self.vision_cmd_pub = self.create_publisher(String, 'vision/cmd', 10)
         self.nav_cmd_pub = self.create_publisher(String, 'nav/cmd', 10)
         self.manip_cmd_pub = self.create_publisher(String, 'manipulation/cmd', 10)
 
+        self.vision_status_sub = self.create_subscription(String, 'vision/status', self.vision_status_callback, 10)
         self.nav_status_sub = self.create_subscription(String, 'nav/status', self.nav_status_callback, 10)
         self.manip_status_sub = self.create_subscription(String, 'manipulation/status', self.manip_status_callback, 10)
         self.command_sub = self.create_subscription(String, 'command_sequence', self.command_sequence_callback, 10)
 
-        self.mode = PlannerMode.IDLE
+        self.state = RobotStates.IDLE
         self.chain = []
-        self.command_index = 0
-
-        self.listening_done = False
-        self.search_done = False
-        self.approach_done = False
-        self.collect_done = False
-        self.return_done = False
-        self.launch_done = False
+        self.task_idx = 0
+        self.done = False
 
         self.create_timer(0.1, self.planner_loop)
         self.get_logger().info("CentralPlanner initialized.")
 
+        self.debug = False # simulate task execution
+
     #####################################################
     
     def command_sequence_callback(self, msg):
-        cmd_list = [cmd.strip() for cmd in msg.data.split(',')]
-        if len(cmd_list) == 1 and cmd_list[0] == 'demo':
-            cmd_list = ['listen', 'search', 'approach', 'collect', 'return', 'launch']
+        task_list = [cmd.strip() for cmd in msg.data.split(',')]
+        assert planner_utils.is_valid_task_list(task_list)
+
+        if 'stop' in task_list:
+            self.safestop()
+        elif self.state == RobotStates.IDLE:
+            self.chain = task_list
+            self.task_idx = 0
+            self.get_logger().warn(f"Starting command sequence: {self.chain}")
+            self.start_next_command()
         else:
-            for cmd in cmd_list:
-                if cmd not in VALID_TASKS:
-                    self.get_logger().error(f"Invalid command in sequence: {cmd}")
-                    return
-        self.chain = cmd_list
-        self.command_index = 0
-        self.get_logger().info(f"Starting command sequence: {','.join(self.chain)}")
-        self.start_next_command()
+            self.get_logger().error(f"Robot is busy, ignoring command sequence: {self.chain}")
+
+    def safestop(self):
+        self.get_logger().warn("Safestop, stopping command sequence.")
+        self.get_logger().info(f"Exiting state: {self.state.name}.")
+        self.state = RobotStates.IDLE
+        self.chain = []
+        self.task_idx = 0
+        # TODO: other safestop logic
 
     def start_next_command(self):
-        if self.command_index >= len(self.chain):
+        if self.task_idx >= len(self.chain):
             self.get_logger().info("Command sequence complete.")
-            self.mode = PlannerMode.IDLE
+            self.state = RobotStates.IDLE
             self.chain = []
-            self.command_index = 0
+            self.task_idx = 0
             return
+        
+        task = self.chain[self.task_idx]
+        self.get_logger().info(f"Executing task: {task}")
+        self.state = planner_utils.task_to_state(task)
 
-        cmd = self.chain[self.command_index]
-        self.mode = VALID_TASKS[cmd]
+        if self.debug:
+            self.get_logger().info(f"sleeping..."); time.sleep(1); self.get_logger().info(f"done.")
+            self.done = True
+        else:
+            if task == 'predict':
+                self.get_logger().error(f"UNIMPLEMENTED")
+                self.get_logger().info(f"sleeping..."); time.sleep(1); self.get_logger().info(f"done.")
+                self.done = True
 
-        if cmd == 'listen':
-            assert False # unimplemented
-        elif cmd in ['search', 'approach', 'return']:
-            self.nav_cmd_pub.publish(String(data=cmd))
-        elif cmd == 'collect':
-            self.manip_cmd_pub.publish(String(data='collector.collect'))
-        elif cmd == 'launch':
-            self.manip_cmd_pub.publish(String(data='launcher.launch'))
+            elif task in ['search', 'approach', 'return']:
+                self.get_logger().error(f"UNIMPLEMENTED")
+                self.get_logger().info(f"sleeping..."); time.sleep(1); self.get_logger().info(f"done.")
+                self.done = True
+                
+                # self.nav_cmd_pub.publish(String(data=task))
 
-        self.get_logger().info(f"Executing task: {cmd.upper()}")
-        self.command_index += 1
+            elif task == 'collect':
+                self.manip_cmd_pub.publish(String(data='collector.collect'))
+
+            elif task == 'launch':
+                self.manip_cmd_pub.publish(String(data='launcher.launch'))
+
+        self.task_idx += 1
 
     #####################################################
     
-    def nav_status_callback(self, msg):
-        if msg.data == 'search_done':
-            self.search_done = True
-        elif msg.data == 'approach_done':
-            self.approach_done = True
-        elif msg.data == 'return_done':
-            self.return_done = True
+    def parse_subsystem_status(self, msg: String):
+        try:
+            msg_data = msg.data.strip().split(";")
+            return msg_data[0].strip(), msg_data[1].strip(), ';'.join(msg_data[2:])
+        except:
+            self.get_logger().fatal(f"Bad subsystem status message: {msg.data}")
 
-    def manip_status_callback(self, msg):
-        if msg.data == 'collect_done':
-            self.collect_done = True
-        elif msg.data == 'launch_done':
-            self.launch_done = True
+    def vision_status_callback(self, msg: String):
+        cmd, status, info = self.parse_subsystem_status(msg)
+        if status: 
+            self.done = True
+
+    def nav_status_callback(self, msg: String):
+        cmd, status, info = self.parse_subsystem_status(msg)
+        if status: 
+            self.done = True
+
+    def manip_status_callback(self, msg: String):
+        cmd, status, info = self.parse_subsystem_status(msg)
+        if status: 
+            self.done = True
 
     #####################################################
     
     def planner_loop(self):
-        if self.mode == PlannerMode.LISTENING and self.listening_done:
-            self.listening_done = False
-            self.start_next_command()
-        elif self.mode == PlannerMode.SEARCHING and self.search_done:
-            self.search_done = False
-            self.start_next_command()
-        elif self.mode == PlannerMode.APPROACHING and self.approach_done:
-            self.approach_done = False
-            self.start_next_command()
-        elif self.mode == PlannerMode.COLLECTING and self.collect_done:
-            self.collect_done = False
-            self.start_next_command()
-        elif self.mode == PlannerMode.RETURNING and self.return_done:
-            self.return_done = False
-            self.start_next_command()
-        elif self.mode == PlannerMode.LAUNCHING and self.launch_done:
-            self.launch_done = False
+        if self.done:
+            self.done = False
             self.start_next_command()
 
 def main(args=None):

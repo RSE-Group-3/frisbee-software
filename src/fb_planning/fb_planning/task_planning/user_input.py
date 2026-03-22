@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
 
 import subprocess
+from ..utils.planner_utils import RobotStates
+from ..utils import planner_utils
 
-VALID_TASKS = ['launch', 'collect']
+# terminal colors
+GREEN = "\033[32m"
+RESET = "\033[0m"
 
 def run_command(tasks):
     cmd = ["ros2", "topic", "pub", "/command_sequence", "std_msgs/String", f"data: '{tasks}'", "--once"]
     try:
+        print()
         print(f"Running: {' '.join(cmd)}")
         subprocess.run(cmd, check=True)
-        print("Command finished successfully.\n")
+        print("Command received.\n")
     except subprocess.CalledProcessError as e:
         print(f"Command failed with return code {e.returncode}\n")
     except KeyboardInterrupt:
@@ -17,27 +22,43 @@ def run_command(tasks):
         raise
 
 def main():
-    print("tasks:")
+    print(f'''
+VALID_TASKS = {planner_utils.valid_tasks()}
+
+Usage:
+    collect               # single task
+    collect,return,launch # task sequence
+
+    reset_mech            # reset collector
+    reset_position        # zero robot position
+    reset_tracker         # discard previous tracking data
+          
+    reset                 # reset_mech,reset_pos,reset_track
+    demo                  # predict,search,approach,collect,return,launch
+
+    stop                  # interrupt task execution
+''')
 
     try:
         while True:
-            user_input = input("\nEnter task sequence (q to exit): ").strip()
-            if user_input.lower() == "q":
-                print("Exiting.")
-                break
+            user_input = input(f"\n{GREEN}Enter task sequence: {RESET}").strip()
+
+            # shortcuts
+            if user_input == 'reset':
+                user_input = 'reset_mech,reset_pos,reset_track'
+            elif user_input == 'demo':
+                user_input = 'predict,search,approach,collect,return,launch'
+                
+            task_list = user_input.split(',')
             
+            if not planner_utils.is_valid_task_list(task_list):
+                print(f"Invalid task list: {task_list}. Please use: {', '.join(planner_utils.valid_tasks())}")
             else:
-                task_list = user_input.split(',')
-                for task in task_list:
-                    if task not in VALID_TASKS:
-                        print(f"Invalid task: {task}. Please use: {', '.join(VALID_TASKS)}")
-                        break
-                else:
-                    run_command(user_input)
+                run_command(user_input)
 
 
     except KeyboardInterrupt:
-        print("\nExecution interrupted by user. Goodbye!")
+        print("Exiting.")
 
 if __name__ == "__main__":
     main()

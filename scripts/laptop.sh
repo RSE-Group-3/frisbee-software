@@ -19,4 +19,4 @@ ros2 pkg list | grep fb_
 ./src/fb_vision/scripts/vision.sh
 
 sleep 1
-tmux attach
+tmux attach-session -t central_planner

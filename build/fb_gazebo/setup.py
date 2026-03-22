@@ -1,1 +1,0 @@
-/ros2_ws/src/fb_gazebo/setup.py

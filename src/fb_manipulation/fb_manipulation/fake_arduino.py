@@ -16,12 +16,12 @@ class FakeArduino(Node):
 
         self.get_logger().info("Fake Arduino node online.")
 
-    def serial_callback(self, subcmd_msg: String):
+    def serial_callback(self, cmd_msg: String):
         """
-        received collector or launcher subcommand from manipulation node
+        received collector or launcher command from manipulation node
         """
         time.sleep(1)
-        self.status_pub.publish(String(data=f'OK: fake success "{subcmd_msg.data}"'))
+        self.status_pub.publish(String(data=f'OK: fake success "{cmd_msg.data}"'))
         # self.status_pub.publish(String(data=f'FAIL: fake fail "{subcmd_msg.data}"'))
         
 

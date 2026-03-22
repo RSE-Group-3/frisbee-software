@@ -18,5 +18,5 @@ docker run --rm -it \
 -v /dev:/dev \
 -v $(pwd):/ros2_ws \
 -e ROS_DOMAIN_ID=3 \
--e TERM="$TERM" \
+-e TERM=xterm-256color \
 frisbee_laptop
