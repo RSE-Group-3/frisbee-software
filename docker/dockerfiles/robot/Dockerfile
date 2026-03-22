@@ -9,32 +9,6 @@ RUN apt update && apt install -y \
     psmisc \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt update && apt install -y \
-    ros-humble-topic-tools \
-    ros-humble-teleop-twist-keyboard \
-    ros-humble-navigation2 \
-    ros-humble-nav2-bringup \
-    && rm -rf /var/lib/apt/lists/*
-
-# # vision
-# RUN apt update && apt install -y \
-#     ros-humble-usb-cam ros-humble-image-tools \
-#     python3-opencv \
-#     ros-humble-cv-bridge \
-#     ros-humble-image-transport \
-#     ros-humble-image-transport-plugins \
-#     && rm -rf /var/lib/apt/lists/*
-    
-# # sim
-# RUN apt update && apt install -y \
-#     ros-humble-gazebo-ros-pkgs \
-#     ros-humble-ros2-control ros-humble-ros2-controllers \
-#     ros-humble-xacro \
-#     ros-humble-gazebo-ros2-control \
-#     ros-humble-ros2-control \
-#     ros-humble-controller-manager \
-#     && rm -rf /var/lib/apt/lists/*
-
 
 # Install Arduino CLI
 RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh \

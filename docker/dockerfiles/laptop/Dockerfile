@@ -23,6 +23,24 @@ RUN apt update && apt install -y \
     ros-humble-image-transport-plugins \
     && rm -rf /var/lib/apt/lists/*
 
+# mobility
+RUN apt update && apt install -y \
+    ros-humble-topic-tools \
+    ros-humble-teleop-twist-keyboard \
+    ros-humble-navigation2 \
+    ros-humble-nav2-bringup \
+    && rm -rf /var/lib/apt/lists/*
+     
+# sim
+RUN apt update && apt install -y \
+    ros-humble-gazebo-ros-pkgs \
+    ros-humble-ros2-control ros-humble-ros2-controllers \
+    ros-humble-xacro \
+    ros-humble-gazebo-ros2-control \
+    ros-humble-ros2-control \
+    ros-humble-controller-manager \
+    && rm -rf /var/lib/apt/lists/*
+
 
 RUN groupadd -g $GID appgroup && useradd -m -u $UID -g appgroup -s /bin/bash appuser
 USER appuser
