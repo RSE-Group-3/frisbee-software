@@ -5,10 +5,17 @@ ARG UID=1000
 RUN apt update && apt install -y \
     python3-pip \
     tmux \
+    nano \
+    psmisc \
     && rm -rf /var/lib/apt/lists/*
-    
+
+# TODO: cannot find
+# RUN apt update && apt install -y \
+#     ros-humble-foxglove-bridge \
+#     && rm -rf /var/lib/apt/lists/*
+
+# vision
 RUN apt update && apt install -y \
-    ros-humble-foxglove-bridge \
     ros-humble-usb-cam ros-humble-image-tools \
     python3-opencv \
     ros-humble-cv-bridge \
@@ -38,5 +45,9 @@ if [ -f "$SETUP" ]; then
     source "$SETUP"
 fi
 EOF
+
+# Set up tmux 256-color configuration
+RUN echo 'set -g default-terminal "screen-256color"' >> /home/appuser/.tmux.conf \
+ && echo 'set -g terminal-overrides "*:colors=256"' >> /home/appuser/.tmux.conf
 
 CMD ["bash", "-i"]

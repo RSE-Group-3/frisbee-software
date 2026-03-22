@@ -1,3 +1,4 @@
 [console_scripts]
+fake_arduino = fb_manipulation.fake_arduino:main
 manipulation_node = fb_manipulation.manipulation_node:main
 

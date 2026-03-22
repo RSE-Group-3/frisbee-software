@@ -1,134 +1,134 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String, Bool, Int32
-from geometry_msgs.msg import PoseStamped
-from fb_utils.fb_msgs import LauncherCmd, LauncherAck, CollectorCmd, CollectorAck
-
+from std_msgs.msg import String
+from std_srvs.srv import Trigger
 from enum import IntEnum
 
 class PlannerMode(IntEnum):
-    STARTUP = 0
+    IDLE = 0
     LISTENING = 1
     SEARCHING = 2
-    COLLECTING = 3
-    RETURNING = 4
-    LAUNCHING = 5
-    SAFESTOP = 6
+    APPROACHING = 3
+    COLLECTING = 4
+    RETURNING = 5
+    LAUNCHING = 6
+
+VALID_TASKS = {
+    'listen': PlannerMode.LISTENING,
+    'search': PlannerMode.SEARCHING,
+    'approach': PlannerMode.APPROACHING,
+    'collect': PlannerMode.COLLECTING,
+    'return': PlannerMode.RETURNING,
+    'launch': PlannerMode.LAUNCHING
+}
 
 class CentralPlanner(Node):
     def __init__(self):
         super().__init__('central_planner')
-        
-        self.arduino_cmd_pub = self.create_publisher(Int32, 'arduino/cmd', 10)
-        self.arduino_ack_sub = self.create_subscription(Int32, 'arduino/ack', self.arduino_callback, 10)
 
-        self.launcher_cmd_pub = self.create_publisher(Int32, 'launcher/cmd', 10)
-        self.launcher_ack_sub = self.create_subscription(Int32, 'launcher/status', self.launcher_callback, 10)
-        self.collector_cmd_pub = self.create_publisher(Int32, 'collector/cmd', 10)
-        self.collector_ack_sub = self.create_subscription(Int32, 'collector/status', self.collector_callback, 10)
-        
+        self.nav_cmd_pub = self.create_publisher(String, 'nav/cmd', 10)
+        self.manip_cmd_pub = self.create_publisher(String, 'manipulation/cmd', 10)
+
+        self.nav_status_sub = self.create_subscription(String, 'nav/status', self.nav_status_callback, 10)
+        self.manip_status_sub = self.create_subscription(String, 'manipulation/status', self.manip_status_callback, 10)
+        self.command_sub = self.create_subscription(String, 'command_sequence', self.command_sequence_callback, 10)
+
+        self.mode = PlannerMode.IDLE
+        self.chain = []
+        self.command_index = 0
+
+        self.listening_done = False
+        self.search_done = False
+        self.approach_done = False
+        self.collect_done = False
+        self.return_done = False
+        self.launch_done = False
+
         self.create_timer(0.1, self.planner_loop)
+        self.get_logger().info("CentralPlanner initialized.")
 
-        self.state = PlannerMode.STARTUP
+    #####################################################
+    
+    def command_sequence_callback(self, msg):
+        cmd_list = [cmd.strip() for cmd in msg.data.split(',')]
+        if len(cmd_list) == 1 and cmd_list[0] == 'demo':
+            cmd_list = ['listen', 'search', 'approach', 'collect', 'return', 'launch']
+        else:
+            for cmd in cmd_list:
+                if cmd not in VALID_TASKS:
+                    self.get_logger().error(f"Invalid command in sequence: {cmd}")
+                    return
+        self.chain = cmd_list
+        self.command_index = 0
+        self.get_logger().info(f"Starting command sequence: {','.join(self.chain)}")
+        self.start_next_command()
 
+    def start_next_command(self):
+        if self.command_index >= len(self.chain):
+            self.get_logger().info("Command sequence complete.")
+            self.mode = PlannerMode.IDLE
+            self.chain = []
+            self.command_index = 0
+            return
+
+        cmd = self.chain[self.command_index]
+        self.mode = VALID_TASKS[cmd]
+
+        if cmd == 'listen':
+            assert False # unimplemented
+        elif cmd in ['search', 'approach', 'return']:
+            self.nav_cmd_pub.publish(String(data=cmd))
+        elif cmd == 'collect':
+            self.manip_cmd_pub.publish(String(data='collector.collect'))
+        elif cmd == 'launch':
+            self.manip_cmd_pub.publish(String(data='launcher.launch'))
+
+        self.get_logger().info(f"Executing task: {cmd.upper()}")
+        self.command_index += 1
+
+    #####################################################
+    
+    def nav_status_callback(self, msg):
+        if msg.data == 'search_done':
+            self.search_done = True
+        elif msg.data == 'approach_done':
+            self.approach_done = True
+        elif msg.data == 'return_done':
+            self.return_done = True
+
+    def manip_status_callback(self, msg):
+        if msg.data == 'collect_done':
+            self.collect_done = True
+        elif msg.data == 'launch_done':
+            self.launch_done = True
+
+    #####################################################
+    
     def planner_loop(self):
-        print('=========================================')
-        cmd = input('TESTS\n' +
-                    '\n' +
-                    '0 listen\n' +
-                    '1 search\n' +
-                    '2 approach\n' +
-                    '3 collect\n' +
-                    '4 launch\n' +
-                    '\n' +
-                    '01 listen,search\n' +
-                    '12 search,approach\n' +
-                    '23 approach,collect\n' +
-                    '34 collect,launch\n' +
-                    '\n' +
-                    'm manual_serial\n' +
-                    '\n' +
-                    '01234 demo \n' +
-                    '\n' +
-                    't teleop \n' +
-                    'r rotate \n' +
-                    '\n' +
-                    'Enter test: '
-                    )
-        print('=========================================')
-        
-        match cmd:
-            case '0': 
-                self.test_listen(auto_start=False)
-            case '1': 
-                self.test_search(auto_start=False)
-            case '2': 
-                self.test_approach(auto_start=False)
-            case '3': 
-                self.test_collect(auto_start=False)
-            case '4': 
-                self.test_launch(auto_start=False)
-
-            case '01': 
-                self.test_listen(auto_start=False)
-                self.test_search(auto_start=False)
-            case '12': 
-                self.test_search(auto_start=False)
-                self.test_approach(auto_start=False)
-            case '23': 
-                self.test_approach(auto_start=False)
-                self.test_collect(auto_start=False)
-            case '34': 
-                self.test_collect(auto_start=False)
-                self.test_launch(auto_start=False)
-
-            case 'm': 
-                self.test_manual_serial()
-                
-            case '01234': 
-                print('unimplemented')
-            case _: 
-                print('Invalid test name.')
-        
-            
-    def test_listen(self, auto_start=True):
-        if not auto_start: 
-            input('TEST 0 listen. \Enter to begin listening:')
-        return True
-    
-    def test_search(self, auto_start=True):
-        if not auto_start: 
-            input('TEST 1 search. \nEnter an angle to begin searching (default 0):')
-        return True
-    
-    def test_approach(self, auto_start=True):
-        if not auto_start: 
-            input('TEST 2 approach. \nEnter to begin approaching:')
-        return True
-    
-    def test_collect(self, auto_start=True):
-        if not auto_start: 
-            input('TEST 3 collect. \nMake sure frisbee is aligned with collector. \nPress start to reset collector and collect:')
-        return True
-    
-    def test_launch(self, auto_start=True):
-        if not auto_start: 
-            input('TEST 4 launch. \nPress enter to launch:')
-        self.launcher_cmd_pub.publish(Int32(data=1))
-        return True
-
-
-    def launcher_callback(self, msg):
-        pass
-        
-    def collector_callback(self, msg):
-        pass
-    
-    def arduino_callback(self, msg):
-        pass
+        if self.mode == PlannerMode.LISTENING and self.listening_done:
+            self.listening_done = False
+            self.start_next_command()
+        elif self.mode == PlannerMode.SEARCHING and self.search_done:
+            self.search_done = False
+            self.start_next_command()
+        elif self.mode == PlannerMode.APPROACHING and self.approach_done:
+            self.approach_done = False
+            self.start_next_command()
+        elif self.mode == PlannerMode.COLLECTING and self.collect_done:
+            self.collect_done = False
+            self.start_next_command()
+        elif self.mode == PlannerMode.RETURNING and self.return_done:
+            self.return_done = False
+            self.start_next_command()
+        elif self.mode == PlannerMode.LAUNCHING and self.launch_done:
+            self.launch_done = False
+            self.start_next_command()
 
 def main(args=None):
     rclpy.init(args=args)
     node = CentralPlanner()
     rclpy.spin(node)
     rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()

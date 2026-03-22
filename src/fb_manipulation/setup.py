@@ -26,6 +26,7 @@ setup(
     entry_points={
         'console_scripts': [
             'manipulation_node = fb_manipulation.manipulation_node:main',
+            'fake_arduino = fb_manipulation.fake_arduino:main',
         ],
     },
 )

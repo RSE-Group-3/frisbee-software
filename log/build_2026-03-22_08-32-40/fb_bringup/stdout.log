@@ -1,0 +1,25 @@
+running develop
+running egg_info
+creating fb_bringup.egg-info
+writing fb_bringup.egg-info/PKG-INFO
+writing dependency_links to fb_bringup.egg-info/dependency_links.txt
+writing entry points to fb_bringup.egg-info/entry_points.txt
+writing requirements to fb_bringup.egg-info/requires.txt
+writing top-level names to fb_bringup.egg-info/top_level.txt
+writing manifest file 'fb_bringup.egg-info/SOURCES.txt'
+reading manifest file 'fb_bringup.egg-info/SOURCES.txt'
+writing manifest file 'fb_bringup.egg-info/SOURCES.txt'
+running build_ext
+Creating /ros2_ws/install/fb_bringup/lib/python3.10/site-packages/fb-bringup.egg-link (link to .)
+Installing arduino_bridge script to /ros2_ws/install/fb_bringup/lib/fb_bringup
+
+Installed /ros2_ws/build/fb_bringup
+running symlink_data
+creating /ros2_ws/install/fb_bringup/share/ament_index
+creating /ros2_ws/install/fb_bringup/share/ament_index/resource_index
+creating /ros2_ws/install/fb_bringup/share/ament_index/resource_index/packages
+symbolically linking /ros2_ws/build/fb_bringup/resource/fb_bringup -> /ros2_ws/install/fb_bringup/share/ament_index/resource_index/packages
+symbolically linking /ros2_ws/build/fb_bringup/package.xml -> /ros2_ws/install/fb_bringup/share/fb_bringup
+creating /ros2_ws/install/fb_bringup/share/fb_bringup/launch
+symbolically linking /ros2_ws/build/fb_bringup/fb_bringup/launch/arduino_bridge.launch.py -> /ros2_ws/install/fb_bringup/share/fb_bringup/launch
+symbolically linking /ros2_ws/build/fb_bringup/fb_bringup/launch/cameras.launch.py -> /ros2_ws/install/fb_bringup/share/fb_bringup/launch

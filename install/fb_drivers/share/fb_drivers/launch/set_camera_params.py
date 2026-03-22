@@ -1,1 +1,0 @@
-/ros2_ws/build/fb_drivers/fb_drivers/launch/set_camera_params.py

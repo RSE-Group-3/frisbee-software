@@ -1,25 +1,22 @@
 #!/bin/bash
 
+colcon build --packages-select fb_bringup --symlink-install
 colcon build --packages-select fb_planning --symlink-install
 colcon build --packages-select fb_vision --symlink-install
-colcon build --packages-select fb_utils --symlink-install
-
-colcon build --packages-select fb_drivers --symlink-install
 
 source install/setup.bash
 
 ros2 pkg list | grep fb_
 
-###
+######
 
-tmux kill-server
+./src/fb_bringup/scripts/foxglove_bridge.sh
+./src/fb_bringup/scripts/cameras_laptop.sh
 
-./scripts/sessions_laptop/foxglove_bridge.sh
+./src/fb_planning/scripts/central_planner.sh
+./src/fb_planning/scripts/path_planner.sh
 
-./scripts/sessions_laptop/central_planner.sh
-./scripts/sessions_laptop/path_planner.sh
-
-./scripts/sessions_laptop/vision.sh
+./src/fb_vision/scripts/vision.sh
 
 sleep 1
 tmux attach

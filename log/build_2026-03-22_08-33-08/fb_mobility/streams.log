@@ -1,0 +1,17 @@
+[0.245s] Invoking command in '/ros2_ws/build/fb_mobility': PYTHONPATH=/ros2_ws/build/fb_mobility/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ros2_ws/install/fb_mobility/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ros2_ws/build/fb_mobility/build --no-deps symlink_data
+[0.333s] running develop
+[0.369s] running egg_info
+[0.369s] writing fb_mobility.egg-info/PKG-INFO
+[0.369s] writing dependency_links to fb_mobility.egg-info/dependency_links.txt
+[0.370s] writing entry points to fb_mobility.egg-info/entry_points.txt
+[0.370s] writing requirements to fb_mobility.egg-info/requires.txt
+[0.370s] writing top-level names to fb_mobility.egg-info/top_level.txt
+[0.370s] reading manifest file 'fb_mobility.egg-info/SOURCES.txt'
+[0.371s] writing manifest file 'fb_mobility.egg-info/SOURCES.txt'
+[0.371s] running build_ext
+[0.371s] Creating /ros2_ws/install/fb_mobility/lib/python3.10/site-packages/fb-mobility.egg-link (link to .)
+[0.371s] Installing diff_drive script to /ros2_ws/install/fb_mobility/lib/fb_mobility
+[0.372s] 
+[0.372s] Installed /ros2_ws/build/fb_mobility
+[0.372s] running symlink_data
+[0.383s] Invoked command in '/ros2_ws/build/fb_mobility' returned '0': PYTHONPATH=/ros2_ws/build/fb_mobility/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ros2_ws/install/fb_mobility/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ros2_ws/build/fb_mobility/build --no-deps symlink_data

@@ -30,6 +30,7 @@ setup(
     entry_points={
         'console_scripts': [
             'central_planner = fb_planning.task_planning.central_planner:main',
+            'user_input = fb_planning.task_planning.user_input:main',
         ],
     },
 )

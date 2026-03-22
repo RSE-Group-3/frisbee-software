@@ -2,6 +2,7 @@ package.xml
 setup.cfg
 setup.py
 fb_manipulation/__init__.py
+fb_manipulation/fake_arduino.py
 fb_manipulation/manipulation_node.py
 fb_manipulation.egg-info/PKG-INFO
 fb_manipulation.egg-info/SOURCES.txt

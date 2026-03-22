@@ -1,0 +1,29 @@
+[0.219s] Invoking command in '/ros2_ws/build/fb_gazebo': PYTHONPATH=/ros2_ws/build/fb_gazebo/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ros2_ws/install/fb_gazebo/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ros2_ws/build/fb_gazebo/build --no-deps symlink_data
+[0.305s] running develop
+[0.339s] running egg_info
+[0.339s] creating fb_gazebo.egg-info
+[0.339s] writing fb_gazebo.egg-info/PKG-INFO
+[0.339s] writing dependency_links to fb_gazebo.egg-info/dependency_links.txt
+[0.339s] writing entry points to fb_gazebo.egg-info/entry_points.txt
+[0.339s] writing requirements to fb_gazebo.egg-info/requires.txt
+[0.339s] writing top-level names to fb_gazebo.egg-info/top_level.txt
+[0.339s] writing manifest file 'fb_gazebo.egg-info/SOURCES.txt'
+[0.340s] reading manifest file 'fb_gazebo.egg-info/SOURCES.txt'
+[0.340s] writing manifest file 'fb_gazebo.egg-info/SOURCES.txt'
+[0.340s] running build_ext
+[0.340s] Creating /ros2_ws/install/fb_gazebo/lib/python3.10/site-packages/fb-gazebo.egg-link (link to .)
+[0.341s] 
+[0.341s] Installed /ros2_ws/build/fb_gazebo
+[0.341s] running symlink_data
+[0.341s] creating /ros2_ws/install/fb_gazebo/share/ament_index
+[0.341s] creating /ros2_ws/install/fb_gazebo/share/ament_index/resource_index
+[0.341s] creating /ros2_ws/install/fb_gazebo/share/ament_index/resource_index/packages
+[0.341s] symbolically linking /ros2_ws/build/fb_gazebo/resource/fb_gazebo -> /ros2_ws/install/fb_gazebo/share/ament_index/resource_index/packages
+[0.341s] symbolically linking /ros2_ws/build/fb_gazebo/package.xml -> /ros2_ws/install/fb_gazebo/share/fb_gazebo
+[0.341s] creating /ros2_ws/install/fb_gazebo/share/fb_gazebo/launch
+[0.341s] symbolically linking /ros2_ws/build/fb_gazebo/fb_gazebo/launch/sim.launch.py -> /ros2_ws/install/fb_gazebo/share/fb_gazebo/launch
+[0.341s] creating /ros2_ws/install/fb_gazebo/share/fb_gazebo/urdf
+[0.341s] symbolically linking /ros2_ws/build/fb_gazebo/fb_gazebo/urdf/robot.urdf.xacro -> /ros2_ws/install/fb_gazebo/share/fb_gazebo/urdf
+[0.341s] creating /ros2_ws/install/fb_gazebo/share/fb_gazebo/config
+[0.341s] symbolically linking /ros2_ws/build/fb_gazebo/fb_gazebo/config/diff_drive_controller.yaml -> /ros2_ws/install/fb_gazebo/share/fb_gazebo/config
+[0.353s] Invoked command in '/ros2_ws/build/fb_gazebo' returned '0': PYTHONPATH=/ros2_ws/build/fb_gazebo/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ros2_ws/install/fb_gazebo/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ros2_ws/build/fb_gazebo/build --no-deps symlink_data

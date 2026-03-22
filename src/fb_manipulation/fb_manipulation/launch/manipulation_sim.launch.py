@@ -11,6 +11,14 @@ def generate_launch_description():
         output="screen"
     )
 
+    fake_arduino = Node(
+        package=pkg_name,
+        executable="fake_arduino",
+        arguments=[],
+        output="screen"
+    )
+
     return LaunchDescription([
         manipulation_node,
+        fake_arduino,
     ])
