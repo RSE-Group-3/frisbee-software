@@ -1,0 +1,23 @@
+running develop
+running egg_info
+creating fb_manipulation.egg-info
+writing fb_manipulation.egg-info/PKG-INFO
+writing dependency_links to fb_manipulation.egg-info/dependency_links.txt
+writing entry points to fb_manipulation.egg-info/entry_points.txt
+writing requirements to fb_manipulation.egg-info/requires.txt
+writing top-level names to fb_manipulation.egg-info/top_level.txt
+writing manifest file 'fb_manipulation.egg-info/SOURCES.txt'
+reading manifest file 'fb_manipulation.egg-info/SOURCES.txt'
+writing manifest file 'fb_manipulation.egg-info/SOURCES.txt'
+running build_ext
+Creating /ros2_ws/install/fb_manipulation/lib/python3.10/site-packages/fb-manipulation.egg-link (link to .)
+Installing manipulation_node script to /ros2_ws/install/fb_manipulation/lib/fb_manipulation
+
+Installed /ros2_ws/build/fb_manipulation
+running symlink_data
+creating /ros2_ws/install/fb_manipulation/share/ament_index
+creating /ros2_ws/install/fb_manipulation/share/ament_index/resource_index
+creating /ros2_ws/install/fb_manipulation/share/ament_index/resource_index/packages
+symbolically linking /ros2_ws/build/fb_manipulation/resource/fb_manipulation -> /ros2_ws/install/fb_manipulation/share/ament_index/resource_index/packages
+symbolically linking /ros2_ws/build/fb_manipulation/package.xml -> /ros2_ws/install/fb_manipulation/share/fb_manipulation
+creating /ros2_ws/install/fb_manipulation/share/fb_manipulation/launch

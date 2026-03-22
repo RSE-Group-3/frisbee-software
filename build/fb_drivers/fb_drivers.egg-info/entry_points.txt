@@ -1,0 +1,3 @@
+[console_scripts]
+arduino_bridge = fb_drivers.arduino_bridge:main
+

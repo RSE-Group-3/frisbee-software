@@ -1,0 +1,18 @@
+[0.241s] Invoking command in '/ros2_ws/build/fb_vision': PYTHONPATH=/ros2_ws/build/fb_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ros2_ws/install/fb_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ros2_ws/build/fb_vision/build --no-deps symlink_data
+[0.342s] running develop
+[0.377s] running egg_info
+[0.377s] writing fb_vision.egg-info/PKG-INFO
+[0.377s] writing dependency_links to fb_vision.egg-info/dependency_links.txt
+[0.377s] writing entry points to fb_vision.egg-info/entry_points.txt
+[0.377s] writing requirements to fb_vision.egg-info/requires.txt
+[0.377s] writing top-level names to fb_vision.egg-info/top_level.txt
+[0.378s] reading manifest file 'fb_vision.egg-info/SOURCES.txt'
+[0.378s] writing manifest file 'fb_vision.egg-info/SOURCES.txt'
+[0.378s] running build_ext
+[0.378s] Creating /ros2_ws/install/fb_vision/lib/python3.10/site-packages/fb-vision.egg-link (link to .)
+[0.379s] Installing air_tracker_node script to /ros2_ws/install/fb_vision/lib/fb_vision
+[0.379s] Installing ground_tracker_node script to /ros2_ws/install/fb_vision/lib/fb_vision
+[0.379s] 
+[0.379s] Installed /ros2_ws/build/fb_vision
+[0.379s] running symlink_data
+[0.391s] Invoked command in '/ros2_ws/build/fb_vision' returned '0': PYTHONPATH=/ros2_ws/build/fb_vision/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ros2_ws/install/fb_vision/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ros2_ws/build/fb_vision/build --no-deps symlink_data

@@ -1,0 +1,28 @@
+[0.301s] Invoking command in '/ros2_ws/build/fb_drivers': PYTHONPATH=/ros2_ws/build/fb_drivers/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ros2_ws/install/fb_drivers/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ros2_ws/build/fb_drivers/build --no-deps symlink_data
+[0.346s] Traceback (most recent call last):
+[0.346s]   File "/ros2_ws/build/fb_drivers/setup.py", line 1, in <module>
+[0.346s]     from setuptools import setup
+[0.346s]   File "/usr/lib/python3/dist-packages/setuptools/__init__.py", line 16, in <module>
+[0.355s]     import setuptools.version
+[0.355s]   File "/usr/lib/python3/dist-packages/setuptools/version.py", line 1, in <module>
+[0.355s]     import pkg_resources
+[0.355s]   File "/usr/lib/python3/dist-packages/pkg_resources/__init__.py", line 33, in <module>
+[0.355s]     import email.parser
+[0.355s]   File "/usr/lib/python3.10/email/parser.py", line 12, in <module>
+[0.355s]     from email.feedparser import FeedParser, BytesFeedParser
+[0.355s]   File "/usr/lib/python3.10/email/feedparser.py", line 31, in <module>
+[0.355s]     NLCRE = re.compile(r'\r\n|\r|\n')
+[0.355s]   File "/usr/lib/python3.10/re.py", line 251, in compile
+[0.355s]     return _compile(pattern, flags)
+[0.355s]   File "/usr/lib/python3.10/re.py", line 303, in _compile
+[0.355s]     p = sre_compile.compile(pattern, flags)
+[0.355s]   File "/usr/lib/python3.10/sre_compile.py", line 792, in compile
+[0.356s]     code = _code(p, flags)
+[0.356s]   File "/usr/lib/python3.10/sre_compile.py", line 628, in _code
+[0.356s]     _compile_info(code, p, flags)
+[0.356s]   File "/usr/lib/python3.10/sre_compile.py", line 564, in _compile_info
+[0.356s]     lo, hi = pattern.getwidth()
+[0.356s]   File "/usr/lib/python3.10/sre_parse.py", line 186, in getwidth
+[0.356s]     i = min(i, l)
+[0.356s] KeyboardInterrupt
+[0.362s] Invoked command in '/ros2_ws/build/fb_drivers' returned '-2': PYTHONPATH=/ros2_ws/build/fb_drivers/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ros2_ws/install/fb_drivers/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ros2_ws/build/fb_drivers/build --no-deps symlink_data

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SESSION="navigation"
+SESSION="path_planner"
 
 # Kill existing session if it exists
 tmux has-session -t $SESSION 2>/dev/null
@@ -11,7 +11,3 @@ fi
 tmux new-session -d -s $SESSION
 
 tmux split-window -h -t $SESSION
-
-tmux send-keys -t $SESSION:0.0 "source install/setup.bash" C-m
-
-tmux send-keys -t $SESSION:0.1 "source install/setup.bash" C-m

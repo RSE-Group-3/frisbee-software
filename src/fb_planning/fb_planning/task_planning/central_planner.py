@@ -32,10 +32,91 @@ class CentralPlanner(Node):
         self.state = PlannerMode.STARTUP
 
     def planner_loop(self):
-        cmd = int(input("0 to reset, 1 to launch: "))
-        assert cmd == 0 or cmd == 1
-        self.launcher_cmd_pub.publish(Int32(data=cmd))
+        print('=========================================')
+        cmd = input('TESTS\n' +
+                    '\n' +
+                    '0 listen\n' +
+                    '1 search\n' +
+                    '2 approach\n' +
+                    '3 collect\n' +
+                    '4 launch\n' +
+                    '\n' +
+                    '01 listen,search\n' +
+                    '12 search,approach\n' +
+                    '23 approach,collect\n' +
+                    '34 collect,launch\n' +
+                    '\n' +
+                    'm manual_serial\n' +
+                    '\n' +
+                    '01234 demo \n' +
+                    '\n' +
+                    't teleop \n' +
+                    'r rotate \n' +
+                    '\n' +
+                    'Enter test: '
+                    )
+        print('=========================================')
+        
+        match cmd:
+            case '0': 
+                self.test_listen(auto_start=False)
+            case '1': 
+                self.test_search(auto_start=False)
+            case '2': 
+                self.test_approach(auto_start=False)
+            case '3': 
+                self.test_collect(auto_start=False)
+            case '4': 
+                self.test_launch(auto_start=False)
+
+            case '01': 
+                self.test_listen(auto_start=False)
+                self.test_search(auto_start=False)
+            case '12': 
+                self.test_search(auto_start=False)
+                self.test_approach(auto_start=False)
+            case '23': 
+                self.test_approach(auto_start=False)
+                self.test_collect(auto_start=False)
+            case '34': 
+                self.test_collect(auto_start=False)
+                self.test_launch(auto_start=False)
+
+            case 'm': 
+                self.test_manual_serial()
+                
+            case '01234': 
+                print('unimplemented')
+            case _: 
+                print('Invalid test name.')
+        
             
+    def test_listen(self, auto_start=True):
+        if not auto_start: 
+            input('TEST 0 listen. \Enter to begin listening:')
+        return True
+    
+    def test_search(self, auto_start=True):
+        if not auto_start: 
+            input('TEST 1 search. \nEnter an angle to begin searching (default 0):')
+        return True
+    
+    def test_approach(self, auto_start=True):
+        if not auto_start: 
+            input('TEST 2 approach. \nEnter to begin approaching:')
+        return True
+    
+    def test_collect(self, auto_start=True):
+        if not auto_start: 
+            input('TEST 3 collect. \nMake sure frisbee is aligned with collector. \nPress start to reset collector and collect:')
+        return True
+    
+    def test_launch(self, auto_start=True):
+        if not auto_start: 
+            input('TEST 4 launch. \nPress enter to launch:')
+        self.launcher_cmd_pub.publish(Int32(data=1))
+        return True
+
 
     def launcher_callback(self, msg):
         pass

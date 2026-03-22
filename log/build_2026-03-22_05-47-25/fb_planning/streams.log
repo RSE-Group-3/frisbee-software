@@ -1,0 +1,17 @@
+[0.209s] Invoking command in '/ros2_ws/build/fb_planning': PYTHONPATH=/ros2_ws/build/fb_planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ros2_ws/install/fb_planning/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ros2_ws/build/fb_planning/build --no-deps symlink_data
+[0.294s] running develop
+[0.321s] running egg_info
+[0.321s] writing fb_planning.egg-info/PKG-INFO
+[0.322s] writing dependency_links to fb_planning.egg-info/dependency_links.txt
+[0.322s] writing entry points to fb_planning.egg-info/entry_points.txt
+[0.322s] writing requirements to fb_planning.egg-info/requires.txt
+[0.322s] writing top-level names to fb_planning.egg-info/top_level.txt
+[0.324s] reading manifest file 'fb_planning.egg-info/SOURCES.txt'
+[0.324s] writing manifest file 'fb_planning.egg-info/SOURCES.txt'
+[0.324s] running build_ext
+[0.324s] Creating /ros2_ws/install/fb_planning/lib/python3.10/site-packages/fb-planning.egg-link (link to .)
+[0.324s] Installing central_planner script to /ros2_ws/install/fb_planning/lib/fb_planning
+[0.324s] 
+[0.325s] Installed /ros2_ws/build/fb_planning
+[0.325s] running symlink_data
+[0.338s] Invoked command in '/ros2_ws/build/fb_planning' returned '0': PYTHONPATH=/ros2_ws/build/fb_planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ros2_ws/install/fb_planning/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /ros2_ws/build/fb_planning/build --no-deps symlink_data

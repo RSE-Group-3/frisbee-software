@@ -10,9 +10,8 @@ fi
 
 tmux new-session -d -s $SESSION
 
-tmux split-window -h -t $SESSION
+# tmux split-window -h -t $SESSION
 
-tmux send-keys -t $SESSION:0.0 "source install/setup.bash" C-m
 tmux send-keys -t $SESSION:0.0 "ros2 run fb_planning central_planner" C-m
 
-tmux send-keys -t $SESSION:0.1 "source install/setup.bash" C-m
+# tmux send-keys -t $SESSION:0.1 "source install/setup.bash" C-m

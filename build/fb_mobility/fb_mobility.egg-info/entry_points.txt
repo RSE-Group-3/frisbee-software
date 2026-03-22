@@ -1,0 +1,3 @@
+[console_scripts]
+diff_drive = fb_mobility.diff_drive:main
+

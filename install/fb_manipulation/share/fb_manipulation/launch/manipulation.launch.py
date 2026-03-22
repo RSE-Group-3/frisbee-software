@@ -1,0 +1,1 @@
+/ros2_ws/build/fb_manipulation/fb_manipulation/launch/manipulation.launch.py

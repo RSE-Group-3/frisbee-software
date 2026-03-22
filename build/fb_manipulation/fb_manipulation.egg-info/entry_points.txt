@@ -1,0 +1,3 @@
+[console_scripts]
+manipulation_node = fb_manipulation.manipulation_node:main
+

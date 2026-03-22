@@ -10,7 +10,6 @@ fi
 
 tmux new-session -d -s $SESSION
 
-tmux send-keys -t $SESSION:0.0 "source /opt/ros/humble/setup.bash" C-m
 tmux send-keys -t $SESSION:0.0 "ros2 launch foxglove_bridge foxglove_bridge_launch.xml port:=8765" C-m
 
 # Attach to session
