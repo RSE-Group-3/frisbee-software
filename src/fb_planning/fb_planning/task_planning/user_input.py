@@ -14,14 +14,14 @@ def run_command(tasks):
         print()
         print(f"Running: {' '.join(cmd)}")
         subprocess.run(cmd, check=True)
-        print("Command received.\n")
+        print("Command sent.\n")
     except subprocess.CalledProcessError as e:
         print(f"Command failed with return code {e.returncode}\n")
     except KeyboardInterrupt:
         print("\nExecution interrupted by user.\n")
         raise
 
-def main():
+def print_help():
     print(f'''
 VALID_TASKS = {planner_utils.valid_tasks()}
 
@@ -38,13 +38,19 @@ Usage:
 
     stop                  # interrupt task execution
 ''')
+    
+def main():
+    print_help()
 
     try:
         while True:
             user_input = input(f"\n{GREEN}Enter task sequence: {RESET}").strip()
 
             # shortcuts
-            if user_input == 'reset':
+            if user_input == 'h' or user_input == 'help':
+                print_help()
+                continue
+            elif user_input == 'reset':
                 user_input = 'reset_mech,reset_pos,reset_track'
             elif user_input == 'demo':
                 user_input = 'predict,search,approach,collect,return,launch'

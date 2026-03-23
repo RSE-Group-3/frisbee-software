@@ -15,6 +15,6 @@ tmux split-window -v -t $SESSION
 
 tmux send-keys -t $SESSION:0.0 "ros2 launch fb_manipulation manipulation.launch.py" C-m
 
-tmux send-keys -t $SESSION:0.1 "ros2 topic echo /arduino/cmd" C-m
+tmux send-keys -t $SESSION:0.1 "sleep 1 && ros2 topic echo /arduino/cmd" C-m
 
-tmux send-keys -t $SESSION:0.2 "ros2 topic echo /arduino/status" C-m
+tmux send-keys -t $SESSION:0.2 "sleep 1 && ros2 topic echo /arduino/status" C-m

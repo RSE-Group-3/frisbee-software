@@ -4,13 +4,21 @@ from rclpy.node import Node
 from std_msgs.msg import String
 
 SEQUENCES = {
-                'launcher.launch': [
-                    'LAUNCHER launch 40',
-                ],
-                'collector.reset': [
+                'start': [
+                    'START',
                     'COLLECTOR open',
                     'COLLECTOR high',
                 ],
+                'stop': [
+                    'STOP',
+                ],
+                'launcher.launch': [
+                    'LAUNCHER launch 40',
+                ],
+                # 'collector.reset': [
+                #     'COLLECTOR open',
+                #     'COLLECTOR high',
+                # ],
                 'collector.collect': [
                     'COLLECTOR low',
                     'COLLECTOR close',
@@ -46,7 +54,7 @@ class ManipulationNode(Node):
             self.manip_status_pub.publish(String(data=f"{task}; fail; unknown manipulation task {task}"))
             return
 
-        if self.command_in_progress:
+        if self.command_in_progress and task != 'stop': # stop interrupts commands
             self.get_logger().error(f"Task {self.command_in_progress} already in progress, ignoring {task}")
             return
 
