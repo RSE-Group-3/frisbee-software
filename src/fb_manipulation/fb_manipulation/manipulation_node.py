@@ -3,32 +3,6 @@ from rclpy.node import Node
 
 from std_msgs.msg import String
 
-SEQUENCES = {
-                'start': [
-                    'START',
-                    'COLLECTOR open',
-                    'COLLECTOR high',
-                ],
-                'stop': [
-                    'STOP',
-                ],
-                'launcher.launch': [
-                    'LAUNCHER launch 40',
-                ],
-                # 'collector.reset': [
-                #     'COLLECTOR open',
-                #     'COLLECTOR high',
-                # ],
-                'collector.collect': [
-                    'COLLECTOR low',
-                    'COLLECTOR close',
-                    'COLLECTOR high',
-                    'COLLECTOR high_tilt',
-                    'COLLECTOR open',
-                    'COLLECTOR high',
-                ],
-            }
-
 TIMEOUT = 10 # s
 
 class ManipulationNode(Node):
@@ -47,19 +21,84 @@ class ManipulationNode(Node):
         self.timer = None
         self.command_in_progress = None
 
+
+    def parse_planner_task(self, msg: str):
+        '''
+        03/23/2026 TODO: change commands sent to serial
+
+        wheel commands in fb_mobility/diff_drive.py
+            WHEELS vl_vr {left_vel} {right_vel}
+        '''
+
+        task_msg = msg.strip().split()
+        task, args = task_msg[0], task_msg[1:]
+
+        match task:
+            case 'start': 
+                sequence = [ # also acts as collector reset
+                    'START', # start motors if not already started
+                    'COLLECTOR open',
+                    'COLLECTOR high',
+                ]
+            case 'stop':
+                sequence = [
+                    'STOP', # stop motors if not already stopped
+                ]
+            case 'launcher.launch':
+                if len(args) == 1:
+                    sequence = [
+                        f'LAUNCHER launch {args[0]}'
+                    ]
+                else:
+                    self.get_logger().error(f"Bad launcher.launch arguments")
+                    sequence = [
+                        f'LAUNCHER launch 5'
+                    ]
+            # case 'collector.reset': # not used
+            #     sequence = [
+            #         'COLLECTOR open',
+            #         'COLLECTOR high',
+            #     ]
+            case 'collector.collect': 
+                sequence = [
+                    'COLLECTOR low',
+                    'COLLECTOR close',
+                    'COLLECTOR high_tilt',
+                    'COLLECTOR open',
+                    'COLLECTOR high',
+                ]
+            case _:
+                task, sequence = None, None
+
+        return task, sequence
+
+    def parse_serial_ack(self, msg: str):
+        '''
+        03/23/2026 TODO: change this based on arduino serial output
+        '''
+        # assume all acks are either 'OK: info...' or 'FAIL: info...'
+        serial_msg = msg.strip()
+        ack_status = serial_msg.split()[0]
+        if ack_status == "OK:":
+            return True, serial_msg
+        elif ack_status == "FAIL:":
+            return False, serial_msg
+        
+
     def planner_callback(self, msg: String):
-        task = msg.data
-        if task not in SEQUENCES:
+        task, sequence = self.parse_planner_task(msg.data)
+
+        if sequence is None:
             self.get_logger().error(f"Unknown manipulation task: {task}")
             self.manip_status_pub.publish(String(data=f"{task}; fail; unknown manipulation task {task}"))
             return
 
         if self.command_in_progress and task != 'stop': # stop interrupts commands
-            self.get_logger().error(f"Task {self.command_in_progress} already in progress, ignoring {task}")
+            self.get_logger().error(f"Task {self.command_in_progress} already in progress, ignoring task {task}")
             return
 
         self.get_logger().warn(f"Starting command sequence: {task}")
-        self.current_sequence = SEQUENCES[task]
+        self.current_sequence = sequence
         self.current_index = 0
         self.command_in_progress = task
         self._send_next_command()
@@ -81,20 +120,18 @@ class ManipulationNode(Node):
         if not self.command_in_progress:
             return
 
-        # assume all acks are either 'OK: info...' or 'FAIL: info...'
-        serial_status = msg.data.strip()
-        ack_status = serial_status.split()[0]
-        if ack_status == "OK:":
-            self.get_logger().info(f"Received status: '{serial_status}'")
+        success, info = self.parse_serial_ack(msg.data)
+
+        if self.timer:
+            self.timer.cancel()
+
+        if success:
+            self.get_logger().info(f"Received status: '{msg.data}'")
             self.current_index += 1
-            if self.timer:
-                self.timer.cancel()
             self._send_next_command()
-        elif ack_status == "FAIL:":
-            self.get_logger().warn(f"Received status: '{serial_status}'")
-            if self.timer:
-                self.timer.cancel()
-            self.manip_status_pub.publish(String(data=f"{self.command_in_progress}; fail; {serial_status}"))
+        else:
+            self.get_logger().error(f"Received status: '{msg.data}'")
+            self.manip_status_pub.publish(String(data=f"{self.command_in_progress}; fail; {info}"))
             self.command_in_progress = None
 
     def _command_timeout(self):

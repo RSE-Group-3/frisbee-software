@@ -20,7 +20,7 @@ class DiffDriveSerial(Node):
         v_l = (v - (w * WHEEL_SEPARATION / 2.0)) / WHEEL_RADIUS
         v_r = (v + (w * WHEEL_SEPARATION / 2.0)) / WHEEL_RADIUS
 
-        cmd = f"V L {v_l:.3f} R {v_r:.3f}\n"
+        cmd = f"WHEELS vl_vr {v_l:.3f} {v_r:.3f}\n"
         self.serial_pub.publish(String(data=cmd))
 
 def main():

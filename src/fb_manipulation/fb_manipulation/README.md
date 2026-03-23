@@ -1,1 +1,6 @@
-arduino-cli board list
+view connected boards: arduino-cli board list
+
+notes:
+* 'start' acts as collector reset
+* see diff_drive.py for wheel messages
+    * wheels follow the format WHEELS vl_vr {left_vel} {right_vel}

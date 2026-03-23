@@ -59,7 +59,7 @@ class CentralPlanner(Node):
 
     def start_next_command(self):
         if self.task_idx >= len(self.chain):
-            self.get_logger().warn("Done.")
+            self.get_logger().info("Done.")
             self.state = RobotStates.IDLE
             self.chain = []
             self.task_idx = 0

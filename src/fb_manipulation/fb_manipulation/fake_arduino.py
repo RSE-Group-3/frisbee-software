@@ -21,8 +21,8 @@ class FakeArduino(Node):
         received collector or launcher command from manipulation node
         """
         time.sleep(1)
-        self.status_pub.publish(String(data=f'OK: fake success "{cmd_msg.data}"'))
-        # self.status_pub.publish(String(data=f'FAIL: fake fail "{subcmd_msg.data}"'))
+        self.status_pub.publish(String(data=f'OK: fake success for "{cmd_msg.data}"'))
+        # self.status_pub.publish(String(data=f'FAIL: fake fail for "{subcmd_msg.data}"'))
         
 
 def main(args=None):
