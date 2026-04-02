@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
 import subprocess
-from ..utils.planner_utils import RobotStates
-from ..utils import planner_utils
+from fb_planning.utils.planner_utils import RobotStates
+from fb_planning.utils import planner_utils
 
 # terminal colors
 GREEN = "\033[32m"
 RESET = "\033[0m"
 
 def run_command(tasks):
-    cmd = ["ros2", "topic", "pub", "/command_sequence", "std_msgs/String", f"data: '{tasks}'", "--once"]
+    # ros2 service call /user_input fb_interfaces/srv/PlannerCommand '{"command": "launch"}'
+    cmd = ["ros2", "service", "call", "/user_input", "fb_interfaces/srv/PlannerCommand", f'{{"command": "{tasks}"}}']
     try:
         print()
         print(f"Running: {' '.join(cmd)}")

@@ -8,6 +8,13 @@ RUN apt update && apt install -y \
     nano \
     psmisc \
     curl \
+    # vision
+    ros-humble-usb-cam \
+    ros-humble-image-tools \
+    python3-opencv \
+    ros-humble-cv-bridge \
+    ros-humble-image-transport \
+    ros-humble-image-transport-plugins \
     && rm -rf /var/lib/apt/lists/*
 
 # system-wide arduino

@@ -19,10 +19,13 @@ else
     echo -e "\n:aunching laptop tmux sessions (hardware)...\n"
 fi
 
+colcon build --packages-select fb_interfaces --symlink-install
 colcon build --packages-select fb_bringup --symlink-install
 colcon build --packages-select fb_planning --symlink-install
 colcon build --packages-select fb_vision --symlink-install
 colcon build --packages-select fb_manipulation --symlink-install
+colcon build --packages-select fb_gazebo --symlink-install
+colcon build --packages-select fb_mobility --symlink-install
 
 
 source install/setup.bash

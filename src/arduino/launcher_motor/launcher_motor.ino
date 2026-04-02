@@ -40,7 +40,7 @@ Command parseCommand(String input) {
 
   if (firstSpace != -1) {
     cmd.type = input.substring(0, firstSpace);
-    if (cmd.type.endsWith(":")) {
+    if (cmd.type.endsWith(":")) { // handle colon, e.g. LAUNCHER: launch 1100
         cmd.type = cmd.type.substring(0, cmd.type.length() - 1);
     }
   } else {
@@ -102,7 +102,7 @@ void executeCommand(Command cmd) {
 
 //----------------------------------------------------------------
 
-int rpmToESC(int val) {  
+int distanceToRPM(int val) { // rename this to rpmToESC?
   float trans = 250.0;
   float voltage = 14.8;
   float maxRPM = voltage * trans;
@@ -116,15 +116,15 @@ int rpmToESC(int val) {
 
 // LAUNCHER launch <val>
 void executeLaunch(int val) {
-  // input val is currently rpm. TODO: distance conversion?
-  int esc_val = rpmToESC(val);
+  // input val currently expects rpm. TODO: distance conversion?
+  int esc_val = distanceToRPM(val);
 
   if (!(esc_val >= 1050 && esc_val <= 2000)) {
     Serial.println("FAIL: Launch speed out of bounds");
     return;
   }
 
-  Serial.print("ACTION: Launching at ");
+  Serial.print("Launching at ");
   Serial.println(esc_val);
 
   myESC.writeMicroseconds(esc_val);

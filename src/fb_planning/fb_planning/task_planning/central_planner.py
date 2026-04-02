@@ -1,25 +1,26 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-from std_srvs.srv import Trigger
+from fb_interfaces.srv import PlannerCommand
 
 import time
 
-from ..utils.planner_utils import RobotStates
-from ..utils import planner_utils
+from fb_planning.utils.planner_utils import RobotStates
+from fb_planning.utils import planner_utils
 
 class CentralPlanner(Node):
     def __init__(self):
         super().__init__('central_planner')
 
-        self.manip_cmd_pub = self.create_publisher(String, 'manipulation/cmd', 10)
+        self.manip_client = self.create_client(PlannerCommand, 'manipulation/execute')
         self.nav_cmd_pub = self.create_publisher(String, 'nav/cmd', 10)
         self.vision_cmd_pub = self.create_publisher(String, 'vision/cmd', 10)
 
-        self.manip_status_sub = self.create_subscription(String, 'manipulation/status', self.manip_status_callback, 10)
+        # self.manip_status_sub = self.create_subscription(String, 'manipulation/status', self.manip_status_callback, 10)
         self.nav_status_sub = self.create_subscription(String, 'nav/status', self.nav_status_callback, 10)
         self.vision_status_sub = self.create_subscription(String, 'vision/status', self.vision_status_callback, 10)
-        self.command_sub = self.create_subscription(String, 'command_sequence', self.command_sequence_callback, 10)
+
+        self.command_srv = self.create_service(PlannerCommand, 'user_input', self.user_input_callback)
 
         self.state = RobotStates.IDLE
         self.chain = []
@@ -29,29 +30,35 @@ class CentralPlanner(Node):
         self.create_timer(0.1, self.planner_loop)
         self.get_logger().info("CentralPlanner initialized.")
 
+        # while not self.manip_client.wait_for_service(timeout_sec=60.0):
+        #     self.get_logger().info("Waiting for manipulation service...")
+
     #####################################################
     
-    def command_sequence_callback(self, msg):
-        task_list = [cmd.strip() for cmd in msg.data.split(',')]
-        assert planner_utils.is_valid_task_list(task_list)
-        self.get_logger().info(f"Received {task_list}")
+    def user_input_callback(self, request, response):
+        try:
+            task_str = request.command.strip()
 
-        if 'stop' in task_list:
-            self.get_logger().warn("Safestop, stopping task sequence.")
-            self.get_logger().info(f"Exiting state: {self.state.name}.")
-            self.state = RobotStates.IDLE
-            self.chain = []
-            self.task_idx = 0
+            task_list = [cmd.strip() for cmd in task_str.split(',')]
+            assert planner_utils.is_valid_task_list(task_list)
+            self.get_logger().info(f"Received {task_list}")
 
-            self.safestop()
-
-        elif self.state == RobotStates.IDLE:
-            self.chain = task_list
-            self.task_idx = 0
-            self.get_logger().warn(f"Starting task sequence: {self.chain}")
-            self.start_next_command()
-        else:
-            self.get_logger().error(f"Robot is busy, currently executing: {self.chain}")
+            if 'stop' in task_list or self.state == RobotStates.IDLE:
+                self.chain = task_list
+                self.task_idx = 0
+                self.get_logger().warn(f"Starting task sequence: {self.chain}")
+                self.start_next_command()
+                response.success = True
+                return response
+            else:
+                self.get_logger().error(f"Robot is busy, currently executing: {self.chain}")
+                response.success = False
+                response.message = f"Robot is busy, currently executing: {self.chain}"
+                return response
+        except:
+            response.success = False
+            response.message = f"Error parsing command {request.command}"
+            return response
 
     def safestop(self):
         # other safestop logic
@@ -60,6 +67,13 @@ class CentralPlanner(Node):
     def start_next_command(self):
         if self.task_idx >= len(self.chain):
             self.get_logger().info("Done.")
+            self.state = RobotStates.IDLE
+            self.chain = []
+            self.task_idx = 0
+            return
+        elif 'stop' in self.chain:
+            self.get_logger().warn("Safestop, stopping task sequence.")
+            self.get_logger().info(f"Exiting state: {self.state.name}. Done.")
             self.state = RobotStates.IDLE
             self.chain = []
             self.task_idx = 0
@@ -80,13 +94,17 @@ class CentralPlanner(Node):
             # self.nav_cmd_pub.publish(String(data=task))
 
         elif task == 'collect':
-            self.manip_cmd_pub.publish(String(data='collector.collect'))
+            req = PlannerCommand.Request(command='collector.collect')
+            future = self.manip_client.call_async(req)
+            # future.add_done_callback(self.callback)
 
         elif task == 'launch':
-            self.manip_cmd_pub.publish(String(data='launcher.launch'))
+            req = PlannerCommand.Request(command='launcher.launch')
+            future = self.manip_client.call_async(req)
 
         elif task == 'reset_mech':
-            self.manip_cmd_pub.publish(String(data='start'))
+            req = PlannerCommand.Request(command='start')
+            future = self.manip_client.call_async(req)
 
         elif task == 'reset_pos':
             self.get_logger().error(f"{task} UNIMPLEMENTED, sleeping..."); time.sleep(1)
@@ -120,9 +138,12 @@ class CentralPlanner(Node):
         if status: 
             self.done = True
 
-    def manip_status_callback(self, msg: String):
-        cmd, status, info = self.parse_subsystem_status(msg)
-        if status: 
+    def manip_service_callback(self, future):
+        res = future.result()
+        self.get_logger().info(
+            f"Result: {res.success}, {res.message}"
+        )
+        if res.success: 
             self.done = True
 
     #####################################################
