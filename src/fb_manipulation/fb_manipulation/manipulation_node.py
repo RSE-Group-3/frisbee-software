@@ -39,14 +39,14 @@ class ManipulationNode(Node):
         task, args = task_tokens[0], task_tokens[1:]
 
         match task:
+            case 'stop':
+                sequence = [
+                    'STOP',  # stop all motors if not already stopped
+                ]
             case 'reset_mech':
                 sequence = [
                     'COLLECTOR: open',
                     'COLLECTOR: high',
-                ]
-            case 'stop':
-                sequence = [
-                    'STOP',  # stop all motors if not already stopped
                 ]
             case 'launch':
                 try:
@@ -55,7 +55,7 @@ class ManipulationNode(Node):
                         f'LAUNCHER: launch {args[0]}'
                     ]
                 except:
-                    self.get_logger().error(f"Bad launch arguments, expected 'launcher.launch <int>', got '{msg}'")
+                    self.get_logger().error(f"Bad launch arguments, expected 'launch <int>', got '{msg}'")
                     sequence = [
                         f'LAUNCHER: launch 1200'
                     ]
