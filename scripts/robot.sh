@@ -10,7 +10,7 @@ tmux kill-server
 
 ######
 
-./src/fb_bringup/scripts/cameras_robot.sh
+# ./src/fb_bringup/scripts/launch_cameras.sh robot2 1000 50 # TODO
 ./src/fb_bringup/scripts/arduino_bridge.sh
 
-
+tmux attach-session -t arduino_bridge

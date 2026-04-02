@@ -18,13 +18,7 @@ def generate_launch_description():
         'robot2': {'front_cam': '/dev/video0', 'back_cam': '/dev/video2'},
     }
 
-    camera_set_arg = DeclareLaunchArgument('camera_set', description='''
-        'test': {'front_cam': '/dev/video0'},
-        'laptop1': {'front_cam': '/dev/video2'},
-        'laptop2': {'front_cam': '/dev/video2', 'back_cam': '/dev/video4'},
-        'robot1': {'front_cam': '/dev/video0'},
-        'robot2': {'front_cam': '/dev/video0', 'back_cam': '/dev/video2'},
-        ''')
+    camera_set_arg = DeclareLaunchArgument('camera_set', description=str(all_camera_sets))
     brightness_arg = DeclareLaunchArgument('brightness', description='brightness 0x00980900 (int)    : min=-64 max=64 step=1')
     exposure_arg = DeclareLaunchArgument('exposure', description='exposure_time_absolute 0x009a0902 (int)    : min=1 max=5000 step=1')
 

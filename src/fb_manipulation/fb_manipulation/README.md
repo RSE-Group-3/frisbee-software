@@ -1,5 +1,3 @@
-view connected boards: arduino-cli board list
-
 notes:
 * 'start' acts as collector reset
 * see diff_drive.py for wheel messages

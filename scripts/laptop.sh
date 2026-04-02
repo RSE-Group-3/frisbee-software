@@ -31,8 +31,7 @@ ros2 pkg list | grep fb_
 
 ######
 
-./src/fb_bringup/scripts/foxglove_bridge.sh
-# ./src/fb_bringup/scripts/cameras_laptop.sh
+# ./src/fb_bringup/scripts/launch_cameras.sh test 1000 50
 
 ./src/fb_planning/scripts/central_planner.sh
 

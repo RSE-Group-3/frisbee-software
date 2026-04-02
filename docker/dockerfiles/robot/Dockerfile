@@ -7,28 +7,36 @@ RUN apt update && apt install -y \
     tmux \
     nano \
     psmisc \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-
-# Install Arduino CLI
+# system-wide arduino
 RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh \
     && mv bin/arduino-cli /usr/local/bin/
-# Install Arduino cores and libraries
-RUN arduino-cli core update-index \
+
+
+RUN groupadd -g $GID appgroup \
+    && useradd -m -u $UID -g appgroup -s /bin/bash appuser \
+    && usermod -aG dialout appuser
+
+USER appuser
+
+# ensure Arduino CLI uses a consistent user-owned directory
+ENV ARDUINO_DATA_DIR=/home/appuser/.arduino15
+ENV ARDUINO_CONFIG_DIR=/home/appuser/.arduino15
+
+RUN mkdir -p /home/appuser/.arduino15 \
+    && arduino-cli core update-index \
     && arduino-cli core install arduino:avr \
-    && arduino-cli lib install Servo
+    && arduino-cli core install arduino:samd \
+    && arduino-cli lib install Servo \
+    && arduino-cli lib install AccelStepper
 
 RUN pip install pyserial
-
-
-
-RUN groupadd -g $GID appgroup && useradd -m -u $UID -g appgroup -s /bin/bash appuser
-USER appuser
 
 # ros workspace
 WORKDIR /ros2_ws
 COPY . /ros2_ws
-RUN . /opt/ros/humble/setup.sh
 
 RUN cat <<'EOF' >> /home/appuser/.bashrc
 # green prompt

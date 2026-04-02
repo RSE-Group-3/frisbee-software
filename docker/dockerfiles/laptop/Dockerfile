@@ -7,51 +7,42 @@ RUN apt update && apt install -y \
     tmux \
     nano \
     psmisc \
-    && rm -rf /var/lib/apt/lists/*
-
-# TODO: cannot find
-# RUN apt update && apt install -y \
-#     ros-humble-foxglove-bridge \
-#     && rm -rf /var/lib/apt/lists/*
-
-# vision
-RUN apt update && apt install -y \
-    ros-humble-usb-cam ros-humble-image-tools \
+    curl \
+    git \
+    # # foxglove
+    # ros-humble-foxglove-bridge \ # run outside of docker
+    # vision
+    ros-humble-usb-cam \
+    ros-humble-image-tools \
     python3-opencv \
     ros-humble-cv-bridge \
     ros-humble-image-transport \
     ros-humble-image-transport-plugins \
-    && rm -rf /var/lib/apt/lists/*
-
-# mobility
-RUN apt update && apt install -y \
+    # mobility
+    # ros-humble-foxglove-bridge
     ros-humble-topic-tools \
     ros-humble-teleop-twist-keyboard \
     ros-humble-navigation2 \
     ros-humble-nav2-bringup \
-    && rm -rf /var/lib/apt/lists/*
-     
-# sim
-RUN apt update && apt install -y \
+    # sim
     ros-humble-gazebo-ros-pkgs \
-    ros-humble-ros2-control ros-humble-ros2-controllers \
+    ros-humble-ros2-control \
+    ros-humble-ros2-controllers \
     ros-humble-xacro \
     ros-humble-gazebo-ros2-control \
-    ros-humble-ros2-control \
     ros-humble-controller-manager \
     && rm -rf /var/lib/apt/lists/*
 
+RUN groupadd -g $GID appgroup \
+    && useradd -m -u $UID -g appgroup -s /bin/bash appuser
 
-RUN groupadd -g $GID appgroup && useradd -m -u $UID -g appgroup -s /bin/bash appuser
 USER appuser
 
 # ros workspace
 WORKDIR /ros2_ws
 COPY . /ros2_ws
-RUN . /opt/ros/humble/setup.sh
 
-RUN echo 'source /opt/ros/humble/setup.sh' >> /home/appuser/.bashrc
-RUN echo 'PS1="\[\e[1;32m\]\u@\h:\w\$ \[\e[0m\]"' >> /home/appuser/.bashrc
+RUN . /opt/ros/humble/setup.sh && colcon build
 
 RUN cat <<'EOF' >> /home/appuser/.bashrc
 # green prompt
