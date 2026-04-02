@@ -12,7 +12,7 @@ class ArduinoBridge(Node):
         self.device = self.get_parameter("device").get_parameter_value().string_value
 
         self.serial_port = self.device
-        self.baudrate = 115200
+        self.baudrate = 9600
         self.ser = None
         self.arduino_connected = False
 
@@ -51,6 +51,7 @@ class ArduinoBridge(Node):
 
         cmd = msg.data.strip() # assume valid command
         try:
+            self.get_logger().warn(f"writing to serial: {cmd}")
             self.ser.write((cmd + '\n').encode('utf-8'))
         except SerialException:
             self.get_logger().warn("ARDUINO: Failed to write to Arduino")
@@ -65,6 +66,7 @@ class ArduinoBridge(Node):
         try:
             while self.ser.in_waiting:
                 line = self.ser.readline().decode('utf-8').strip()
+                self.get_logger().warn(f"reading from serial, {line}")
                 if line:
                     msg = String()
                     msg.data = line
