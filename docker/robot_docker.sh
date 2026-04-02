@@ -15,7 +15,9 @@ docker run --rm -it \
 --net=host \
 --ipc=host \
 --privileged \
--v /dev:/dev \
+--device=/dev/video0 \
+--device=/dev/video2 \
+--device=/dev/ttyACM0 \
 -v $(pwd):/ros2_ws \
 -e ROS_DOMAIN_ID=3 \
 -e TERM=xterm-256color \

@@ -3,8 +3,12 @@
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
-        --camera_set)
-        CAMERA_SET="$2"
+        --topic)
+        TOPIC="$2"
+        shift 2
+        ;;
+        --device)
+        DEVICE="$2"
         shift 2
         ;;
         --brightness)
@@ -22,7 +26,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-SESSION="cameras_robot"
+SESSION="camera_"$(basename $TOPIC)
 
 # Kill existing session if it exists
 tmux has-session -t $SESSION 2>/dev/null
@@ -32,10 +36,9 @@ fi
 
 tmux new-session -d -s $SESSION
 
-tmux split-window -h -t $SESSION
+tmux split-window -v -t $SESSION
 
 tmux send-keys -t $SESSION:0.0 "ros2 launch fb_bringup cameras.launch.py --show-args" C-m
-tmux send-keys -t $SESSION:0.0 "ros2 launch fb_bringup cameras.launch.py camera_set:=$CAMERA_SET brightness:=$BRIGHTNESS exposure:=$EXPOSURE" C-m
-# TODO: launch 2 cameras?
+tmux send-keys -t $SESSION:0.0 "ros2 launch fb_bringup cameras.launch.py topic:=$TOPIC device:=$DEVICE brightness:=$BRIGHTNESS exposure:=$EXPOSURE" C-m
 
-tmux send-keys -t $SESSION:0.1 "v4l2-ctl -l --device=/dev/video2" C-m
+tmux send-keys -t $SESSION:0.1 "v4l2-ctl -l --device=$DEVICE # list controls"

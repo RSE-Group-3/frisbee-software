@@ -21,10 +21,10 @@ RUN apt update && apt install -y \
 RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh \
     && mv bin/arduino-cli /usr/local/bin/
 
-
 RUN groupadd -g $GID appgroup \
     && useradd -m -u $UID -g appgroup -s /bin/bash appuser \
-    && usermod -aG dialout appuser
+    && usermod -aG dialout appuser \
+    && usermod -aG video appuser
 
 USER appuser
 
@@ -34,7 +34,6 @@ ENV ARDUINO_CONFIG_DIR=/home/appuser/.arduino15
 
 RUN mkdir -p /home/appuser/.arduino15 \
     && arduino-cli core update-index \
-    && arduino-cli core install arduino:avr \
     && arduino-cli core install arduino:samd \
     && arduino-cli lib install Servo \
     && arduino-cli lib install AccelStepper
