@@ -10,7 +10,7 @@ RESET = "\033[0m"
 
 def run_command(tasks):
     # ros2 service call /user_input fb_interfaces/srv/PlannerCommand '{"command": "launch"}'
-    cmd = ["ros2", "service", "call", "/user_input", "fb_interfaces/srv/PlannerCommand", f'{{"command": "{tasks}"}}']
+    cmd = ["ros2", "topic", "pub", "-1", "/user_input", "std_msgs/msg/String", f'{{"data": "{tasks}"}}']
     try:
         print()
         print(f"Running: {' '.join(cmd)}")

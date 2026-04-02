@@ -1,39 +1,45 @@
-import future
-
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-from fb_interfaces.srv import PlannerCommand
+from fb_interfaces.action import ExecuteCommand
+from rclpy.action import ActionServer
+from rclpy.task import Future
 
 TIMEOUT = 10 # s
+
 
 class ManipulationNode(Node):
     def __init__(self):
         super().__init__('manipulation_node')
 
         self.serial_cmd_pub = self.create_publisher(String, 'arduino/cmd', 10)
-        self.serial_status_sub = self.create_subscription(String, 'arduino/status', self.serial_callback, 10)
+        self.serial_status_sub = self.create_subscription(
+            String, 'arduino/status', self.serial_callback, 10
+        )
 
-        self.srv = self.create_service(PlannerCommand, 'manipulation/execute', self.execute_callback)
+        self.action = ActionServer(
+            self,
+            ExecuteCommand,
+            'manipulation/execute',
+            self.execute_callback
+        )
 
-        self.get_logger().info("Manipulation service node online.")
+        self.get_logger().info("Manipulation node online.")
 
         self.current_sequence = []
         self.current_index = 0
         self.timer = None
         self.command_in_progress = None
-        self.service_response = None
+        self.goal_handle = None
+        self._done_future = None
 
-    def parse_planner_task(self, msg: str):
-        '''
-        wheel commands in fb_mobility/diff_drive.py
-            WHEELS speed {left_vel} {right_vel}
-        '''
-        task_msg = msg.strip().split()
-        task, args = task_msg[0], task_msg[1:]
+
+    def _parse_action_goal(self, msg: str):
+        task_tokens = msg.strip().split()
+        task, args = task_tokens[0], task_tokens[1:]
 
         match task:
-            case 'reset': 
+            case 'reset_mech':
                 sequence = [
                     'COLLECTOR: open',
                     'COLLECTOR: high',
@@ -42,7 +48,7 @@ class ManipulationNode(Node):
                 sequence = [
                     'STOP',  # stop all motors if not already stopped
                 ]
-            case 'launcher.launch':
+            case 'launch':
                 try:
                     assert len(args) == 1 and args[0].isdigit()
                     sequence = [
@@ -53,7 +59,7 @@ class ManipulationNode(Node):
                     sequence = [
                         f'LAUNCHER: launch 1200'
                     ]
-            case 'collector.collect': 
+            case 'collect': 
                 sequence = [
                     'COLLECTOR: low',
                     'COLLECTOR: close',
@@ -66,79 +72,139 @@ class ManipulationNode(Node):
 
         return task, sequence
 
-    def execute_callback(self, request, response):
+
+    async def execute_callback(self, goal_handle):
+        request = goal_handle.request
+        result = ExecuteCommand.Result()
+
         try:
-            task, sequence = self.parse_planner_task(request.command)
+            msg = request.command
+            task, sequence = self._parse_action_goal(msg)
+
             if sequence is None:
-                response.success = False
-                response.message = f"Unknown manipulation task {task}"
-                return response
-            if self.command_in_progress and task != 'stop': # allow 'stop' command to interrupt any current command
-                response.success = False
-                response.message = f"Task {self.command_in_progress} in progress, cannot execute {task}"
-                return response
+                result.success = False
+                result.message = f"Error parsing command {msg}"
+                goal_handle.abort()
+                return result
+
+            if self.command_in_progress and task != 'stop':
+                result.success = False
+                result.message = f"Task {self.command_in_progress} in progress"
+                goal_handle.abort()
+                return result
 
             self.get_logger().warn(f"Starting command sequence: {task}")
+
             self.current_sequence = sequence
             self.current_index = 0
             self.command_in_progress = task
-            self.service_response = response
+            self.goal_handle = goal_handle
+
+            feedback = ExecuteCommand.Feedback()
+            feedback.status = f'Started "{task}"'
+            goal_handle.publish_feedback(feedback)
+
+            self._done_future = Future()
+
             self._send_next_command()
 
-            future = self.client.call_async(request)
-            future.add_done_callback(self.response_callback)
-        
-        except:
-            response.success = False
-            response.message = f"Error parsing command {request.command}"
-            return response
+            result = await self._done_future
+            return result
+
+        except Exception as e:
+            result.success = False
+            result.message = f'Error parsing command "{request.command}": {e}'
+            goal_handle.abort()
+            return result
+
 
     def _send_next_command(self):
-        if self.current_index >= len(self.current_sequence):
-            self.get_logger().warn(f"COMPLETE: Successfully executed {self.chain}")
-            self.service_response.message = f"COMPLETE: Successfully executed {self.chain}"
-            self.service_response.success = True
+        if not self.current_sequence or self.current_index >= len(self.current_sequence):
+            self.get_logger().warn(f"COMPLETE: {self.current_sequence}")
+
+            result = ExecuteCommand.Result()
+            result.success = True
+            result.message = f"COMPLETE: {self.current_sequence}"
+
+            self.goal_handle.succeed()
             self.command_in_progress = None
+
+            if self._done_future and not self._done_future.done():
+                self._done_future.set_result(result)
             return
 
         cmd = self.current_sequence[self.current_index]
         self.get_logger().info(f"Sending command: '{cmd}'")
+
+        feedback = ExecuteCommand.Feedback()
+        feedback.status = f"Executing: {cmd}"
+        self.goal_handle.publish_feedback(feedback)
+
         self.serial_cmd_pub.publish(String(data=cmd))
 
+        if self.timer:
+            self.timer.cancel()
         self.timer = self.create_timer(TIMEOUT, self._command_timeout)
+
 
     def serial_callback(self, msg: String):
         self.get_logger().info(f"Status received '{msg.data}'")
+
         if not self.command_in_progress:
-            self.get_logger().info(f"No command in progress, ignoring status: '{msg.data}'")
             return
 
         if self.timer:
             self.timer.cancel()
+            self.timer = None
 
         serial_msg = msg.data
         ack_status = serial_msg.split()[0]
+
         if ack_status == 'OK:':
             self.get_logger().info(f"Received status: '{msg.data}'")
+
+            # guard against stale state
+            if not self.current_sequence:
+                return
+
             self.current_index += 1
             self._send_next_command()
+
         elif ack_status == 'FAIL:':
-            self.get_logger().error(f"Received status: '{msg.data}'")
-            self.get_logger().error(f"COMPLETE: Execution failed: {msg.data}")
-            self.service_response.message = f"COMPLETE: Execution failed: {msg.data}"
-            self.service_response.success = False
+            self.get_logger().error(f"Execution failed: {msg.data}")
+
+            result = ExecuteCommand.Result()
+            result.success = False
+            result.message = f"Execution failed: {msg.data}"
+
+            self.goal_handle.abort()
             self.command_in_progress = None
 
+            if self._done_future and not self._done_future.done():
+                self._done_future.set_result(result)
+
+
     def _command_timeout(self):
+        if not self.current_sequence or self.current_index >= len(self.current_sequence):
+            return
+
         cmd = self.current_sequence[self.current_index]
+
         if self.timer:
             self.timer.cancel()
+            self.timer = None
 
-        self.service_response.success = False
-        self.get_logger().warn(f"COMPLETE: Timeout on command {cmd}")
-        self.service_response.message = f"COMPLETE: Timeout on command {cmd}"
+        self.get_logger().warn(f"Timeout on command {cmd}")
+
+        result = ExecuteCommand.Result()
+        result.success = False
+        result.message = f"Timeout on command {cmd}"
+
+        self.goal_handle.abort()
         self.command_in_progress = None
-        return
+
+        if self._done_future and not self._done_future.done():
+            self._done_future.set_result(result)
 
 
 def main(args=None):
@@ -152,3 +218,7 @@ def main(args=None):
     finally:
         node.destroy_node()
         rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()

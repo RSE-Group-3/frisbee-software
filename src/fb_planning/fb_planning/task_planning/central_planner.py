@@ -1,26 +1,27 @@
+import time
+
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
-from fb_interfaces.srv import PlannerCommand
+from rclpy.action import ActionClient
 
-import time
+from std_msgs.msg import String
+from fb_interfaces.action import ExecuteCommand
 
 from fb_planning.utils.planner_utils import RobotStates
 from fb_planning.utils import planner_utils
+
 
 class CentralPlanner(Node):
     def __init__(self):
         super().__init__('central_planner')
 
-        self.manip_client = self.create_client(PlannerCommand, 'manipulation/execute')
-        self.nav_cmd_pub = self.create_publisher(String, 'nav/cmd', 10)
-        self.vision_cmd_pub = self.create_publisher(String, 'vision/cmd', 10)
+        # clients
+        self.manip_client = ActionClient(self, ExecuteCommand, 'manipulation/execute')
+        self.nav_client = ActionClient(self, ExecuteCommand, 'navigation/execute')
+        self.vision_client = ActionClient(self, ExecuteCommand, 'vision/execute')
 
-        # self.manip_status_sub = self.create_subscription(String, 'manipulation/status', self.manip_status_callback, 10)
-        self.nav_status_sub = self.create_subscription(String, 'nav/status', self.nav_status_callback, 10)
-        self.vision_status_sub = self.create_subscription(String, 'vision/status', self.vision_status_callback, 10)
-
-        self.command_srv = self.create_service(PlannerCommand, 'user_input', self.user_input_callback)
+        # subscriptions
+        self.user_sub = self.create_subscription(String, 'user_input', self.user_input_callback, 10)
 
         self.state = RobotStates.IDLE
         self.chain = []
@@ -28,126 +29,114 @@ class CentralPlanner(Node):
         self.done = False
 
         self.create_timer(0.1, self.planner_loop)
+
         self.get_logger().info("CentralPlanner initialized.")
 
-        # while not self.manip_client.wait_for_service(timeout_sec=60.0):
-        #     self.get_logger().info("Waiting for manipulation service...")
+    ########################################################
 
-    #####################################################
-    
-    def user_input_callback(self, request, response):
+    def user_input_callback(self, msg: String):
         try:
-            task_str = request.command.strip()
-
+            task_str = msg.data.strip()
+            self.get_logger().info(f'Received user input: "{task_str}"')
             task_list = [cmd.strip() for cmd in task_str.split(',')]
-            assert planner_utils.is_valid_task_list(task_list)
-            self.get_logger().info(f"Received {task_list}")
 
-            if 'stop' in task_list or self.state == RobotStates.IDLE:
+            assert planner_utils.is_valid_task_list(task_list)
+
+            if 'stop' in task_list:
+                self.get_logger().warn(f"User requested stop. Stopping task sequence: {self.chain}")
+                self.chain = ['stop']
+                self.task_idx = 0
+                self.start_next_command()
+            elif self.state == RobotStates.IDLE:
                 self.chain = task_list
                 self.task_idx = 0
                 self.get_logger().warn(f"Starting task sequence: {self.chain}")
                 self.start_next_command()
-                response.success = True
-                return response
             else:
-                self.get_logger().error(f"Robot is busy, currently executing: {self.chain}")
-                response.success = False
-                response.message = f"Robot is busy, currently executing: {self.chain}"
-                return response
-        except:
-            response.success = False
-            response.message = f"Error parsing command {request.command}"
-            return response
+                self.get_logger().error(f"Robot busy. Ignoring user input: {task_list}")
 
-    def safestop(self):
-        # other safestop logic
-        self.manip_cmd_pub.publish(String(data='stop'))
+        except Exception as e:
+            self.get_logger().error(f"Error processing user input: {msg.data} | {e}")
+
+    # =====================================================
+    # TASK EXECUTION
+    # =====================================================
 
     def start_next_command(self):
         if self.task_idx >= len(self.chain):
-            self.get_logger().info("Done.")
-            self.state = RobotStates.IDLE
-            self.chain = []
-            self.task_idx = 0
+            self.get_logger().info("Sequence complete.")
+            self._reset()
             return
-        elif 'stop' in self.chain:
-            self.get_logger().warn("Safestop, stopping task sequence.")
-            self.get_logger().info(f"Exiting state: {self.state.name}. Done.")
-            self.state = RobotStates.IDLE
-            self.chain = []
-            self.task_idx = 0
-            return
-        
+
         task = self.chain[self.task_idx]
-        self.get_logger().info(f"Executing task: {task}")
+        self.get_logger().info(f"Executing: {task}")
+
         self.state = planner_utils.task_to_state(task)
 
-        if task == 'predict':
-            self.get_logger().error(f"{task} UNIMPLEMENTED, sleeping..."); time.sleep(1)
+        if task == 'stop':
+            # TODO: other stop logic
+            self._send_manip_goal(task)
             self.done = True
-
-        elif task in ['search', 'approach', 'return']:
-            self.get_logger().error(f"{task} UNIMPLEMENTED, sleeping..."); time.sleep(1)
-            self.done = True
-            
-            # self.nav_cmd_pub.publish(String(data=task))
-
-        elif task == 'collect':
-            req = PlannerCommand.Request(command='collector.collect')
-            future = self.manip_client.call_async(req)
-            # future.add_done_callback(self.callback)
-
-        elif task == 'launch':
-            req = PlannerCommand.Request(command='launcher.launch')
-            future = self.manip_client.call_async(req)
-
-        elif task == 'reset_mech':
-            req = PlannerCommand.Request(command='start')
-            future = self.manip_client.call_async(req)
-
-        elif task == 'reset_pos':
-            self.get_logger().error(f"{task} UNIMPLEMENTED, sleeping..."); time.sleep(1)
-            self.done = True
-            
-        elif task == 'reset_track':
-            self.get_logger().error(f"{task} UNIMPLEMENTED, sleeping..."); time.sleep(1)
-            self.done = True
-            
+        elif task in ['predict', 'reset_track']:
+            self._handle_unimplemented(task)
+        elif task in ['search', 'approach', 'return', 'reset_pos']:
+            self._handle_unimplemented(task)
+        elif task in ['collect', 'launch', 'reset_mech']:
+            self._send_manip_goal(task)
         else:
-            assert False
+            self.get_logger().error(f"Unknown task: {task}")
+            self.done = True
 
         self.task_idx += 1
 
-    #####################################################
-    
-    def parse_subsystem_status(self, msg: String):
-        try:
-            msg_data = msg.data.strip().split(";")
-            return msg_data[0].strip(), msg_data[1].strip(), ';'.join(msg_data[2:])
-        except:
-            self.get_logger().fatal(f"Bad subsystem status message: {msg.data}")
+    def _handle_unimplemented(self, task):
+        self.get_logger().warn(f"{task} UNIMPLEMENTED")
+        time.sleep(1)
+        self.done = True
 
-    def vision_status_callback(self, msg: String):
-        cmd, status, info = self.parse_subsystem_status(msg)
-        if status: 
-            self.done = True
+    def _send_manip_goal(self, task):
+        goal_msg = ExecuteCommand.Goal()
+        goal_msg.command = task
 
-    def nav_status_callback(self, msg: String):
-        cmd, status, info = self.parse_subsystem_status(msg)
-        if status: 
-            self.done = True
+        self.manip_client.wait_for_server()
 
-    def manip_service_callback(self, future):
-        res = future.result()
-        self.get_logger().info(
-            f"Result: {res.success}, {res.message}"
+        future = self.manip_client.send_goal_async(
+            goal_msg,
+            feedback_callback=self.feedback_callback
         )
-        if res.success: 
-            self.done = True
+        future.add_done_callback(self.goal_response_callback)
 
-    #####################################################
-    
+    def _reset(self):
+        self.state = RobotStates.IDLE
+        self.chain = []
+        self.task_idx = 0
+
+    ########################################################
+
+    def goal_response_callback(self, future):
+        goal_handle = future.result()
+
+        if not goal_handle.accepted:
+            self.get_logger().error("Goal rejected.")
+            self.done = True
+            return
+
+        self.get_logger().info("Goal accepted.")
+
+        result_future = goal_handle.get_result_async()
+        result_future.add_done_callback(self.result_callback)
+
+    def result_callback(self, future):
+        result = future.result().result
+        self.get_logger().info(f"Result: {result.success}, {result.message}")
+        self.done = True
+
+    def feedback_callback(self, feedback_msg):
+        status = feedback_msg.feedback.status
+        self.get_logger().info(f"Feedback: {status}")
+
+    ########################################################
+
     def planner_loop(self):
         if self.done:
             self.done = False
