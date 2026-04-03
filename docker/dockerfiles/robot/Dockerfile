@@ -11,7 +11,6 @@ RUN apt update && apt install -y \
     # vision
     ros-humble-usb-cam \
     ros-humble-image-tools \
-    python3-opencv \
     ros-humble-cv-bridge \
     ros-humble-image-transport \
     ros-humble-image-transport-plugins \
