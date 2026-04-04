@@ -32,6 +32,12 @@ RUN apt update && apt install -y \
     ros-humble-gazebo-ros2-control \
     ros-humble-controller-manager \
     && rm -rf /var/lib/apt/lists/*
+    
+RUN pip3 install --upgrade pip
+
+RUN pip3 install --no-cache-dir --pre \
+    torch torchvision \
+    --index-url https://download.pytorch.org/whl/nightly/cu130
 
 RUN groupadd -g $GID appgroup \
     && useradd -m -u $UID -g appgroup -s /bin/bash appuser

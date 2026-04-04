@@ -39,13 +39,17 @@ def generate_launch_description():
             parameters=[{
                     'video_device': device_name,
                     'framerate': 15.0,
-                    'image_width': 1280,
-                    'image_height': 720,
+                    'image_width': 320, #1280,
+                    'image_height': 240, #720,
                     'pixel_format': 'mjpeg2rgb'
                 }],
             respawn=True,
             respawn_delay=10.0
         )
+
+        # to see valid image sizes: v4l2-ctl --list-formats-ext -d /dev/video0
+        # to see v4l2 parameters: v4l2-ctl -d /dev/video0 --list-ctrls
+
         nodes.append(cam_node)
 
         # Set camera v4l2 parameters after node starts
