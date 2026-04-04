@@ -16,7 +16,7 @@ docker run --rm -it \
 --ipc=host \
 --privileged \
 --device=/dev/video0 \
---device=/dev/video2 \
+--device=/dev/video1 \
 --device=/dev/ttyACM0 \
 -v $(pwd):/ros2_ws \
 -e ROS_DOMAIN_ID=3 \

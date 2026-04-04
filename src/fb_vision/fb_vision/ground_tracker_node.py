@@ -29,7 +29,7 @@ class GroundTrackerNode(Node):
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = seg.deeplabv3_resnet50(weights=None, num_classes=1).to(self.device)
-        self.model.load_state_dict(torch.load("./models/prl_segment_t04_epoch_100.pth", map_location=self.device))
+        self.model.load_state_dict(torch.load("./src/models/prl_segment_old_epoch_100.pth", map_location=self.device))
         self.model.eval()
         self.size = 224
 
