@@ -38,7 +38,7 @@ def generate_launch_description():
             name='usb_cam_node',
             parameters=[{
                     'video_device': device_name,
-                    'framerate': 15.0,
+                    'framerate': 5.0,
                     'image_width': 320, #1280,
                     'image_height': 240, #720,
                     'pixel_format': 'mjpeg2rgb'

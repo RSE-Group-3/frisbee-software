@@ -1,12 +1,13 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import CompressedImage, Image
 import torch
 import torchvision.models.segmentation as seg
 import torchvision.transforms.functional as TF
 from torchvision.transforms import InterpolationMode
 import numpy as np
+import time
 
 import cv2
 from cv_bridge import CvBridge
@@ -16,20 +17,21 @@ class GroundTrackerNode(Node):
         super().__init__('ground_tracker_node')
         
         self.image_sub = self.create_subscription(
-            Image,
-            'camera/collector/image_raw',
+            CompressedImage,
+            'camera/collector/image_raw/compressed',
             self.image_callback,
-            10
+            1
         )
             
         self.mask_pub = self.create_publisher(Image, 'vision/ground_segmentation/mask', 10)
-        self.vis_pub = self.create_publisher(Image, 'vision/ground_segmentation/visualization', 10)
+        self.vis_pub = self.create_publisher(CompressedImage, 'vision/ground_segmentation/visualization', 10)
         
         self.get_logger().info("Ground Tracker Node Initialized")
 
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model = seg.deeplabv3_resnet50(weights=None, num_classes=1).to(self.device)
-        self.model.load_state_dict(torch.load("./src/models/prl_segment_old_epoch_100.pth", map_location=self.device))
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = device
+        self.model = seg.lraspp_mobilenet_v3_large(weights=None, num_classes=1).to(device)
+        self.model.load_state_dict(torch.load("./src/models/prl_segment_epoch_100.pth", map_location=self.device))
         self.model.eval()
         self.size = 224
 
@@ -57,14 +59,16 @@ class GroundTrackerNode(Node):
         input_tensor = img_square.unsqueeze(0).to(self.device) # → NCHW
 
         with torch.no_grad():
+            t0 = time.time()
             output = self.model(input_tensor)['out']
+            print('Prediction time:', time.time() - t0, 's')
             output = torch.sigmoid(output).cpu().numpy().squeeze() > 0.5
             mask_square = (output.astype('uint8') * 255).astype('uint8')
             mask = cv2.resize(mask_square, (image.shape[1], image.shape[0]), interpolation=cv2.INTER_NEAREST)
             center = self.largest_mask_component_center(mask)
             
-            vis = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            vis[mask > 0] = [255, 0, 0] # red overlay for mask
+            vis = image.copy() 
+            vis[mask > 0] = [0, 0, 255] # red overlay for mask
             # cross at the center of the largest component
             if center != (-1, -1):
                 cv2.drawMarker(vis, (int(center[0]), int(center[1])), (0, 255, 0), markerType=cv2.MARKER_CROSS, markerSize=20, thickness=2)
@@ -72,12 +76,12 @@ class GroundTrackerNode(Node):
             return mask, vis, center
 
     def image_callback(self, msg):
+        t0 = time.time()
         # self.get_logger().info("Received image data for processing")
         
-        # Convert ROS Image message to OpenCV format
         bridge = CvBridge()
         try:
-            cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+            cv_image = bridge.compressed_imgmsg_to_cv2(msg, desired_encoding='bgr8')
         except Exception as e:
             self.get_logger().error(f"Error converting image: {e}")
             return
@@ -86,8 +90,10 @@ class GroundTrackerNode(Node):
 
         mask_msg = bridge.cv2_to_imgmsg(mask, encoding='mono8')
         self.mask_pub.publish(mask_msg)
-        vis_msg = bridge.cv2_to_imgmsg(vis, encoding='rgb8')
+        vis_msg = bridge.cv2_to_compressed_imgmsg(vis)
         self.vis_pub.publish(vis_msg)
+
+        print('Total time:', time.time() - t0, 's')
 
 
 def main(args=None):

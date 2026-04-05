@@ -10,7 +10,7 @@ fi
 
 tmux new-session -d -s $SESSION
 
-tmux split-window -h -t $SESSION
+tmux split-window -v -t $SESSION
 
 tmux send-keys -t $SESSION:0.0 "ros2 run fb_bringup arduino_bridge --ros-args -p device:=/dev/ttyACM0" C-m
 tmux send-keys -t $SESSION:0.1 "ros2 topic pub -1 /arduino/cmd std_msgs/msg/String \"{data: 'LAUNCHER: launch 1300'}\""
