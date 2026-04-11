@@ -7,7 +7,7 @@ def generate_launch_description():
     arduino_bridge_node = Node(
         package=pkg_name,
         executable="arduino_bridge",
-        arguments=["--device", "/dev/ttyACM0"],
+        arguments=["--device", "/dev/ttyACM0", "--topic", "arduino"], # TODO: separate?
         output="screen"
     )
 

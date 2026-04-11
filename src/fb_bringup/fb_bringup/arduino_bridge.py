@@ -10,14 +10,16 @@ class ArduinoBridge(Node):
 
         self.declare_parameter("device", '/dev/ttyACM0')
         self.device = self.get_parameter("device").get_parameter_value().string_value
+        self.declare_parameter("topic", 'arduino')
+        self.device = self.get_parameter("arduino").get_parameter_value().string_value
 
         self.serial_port = self.device
         self.baudrate = 9600
         self.ser = None
         self.arduino_connected = False
 
-        self.status_pub = self.create_publisher(String, 'arduino/status', 10)
-        self.cmd_sub = self.create_subscription(String, 'arduino/cmd', self.cmd_callback, 10)
+        self.status_pub = self.create_publisher(String, f'{self.topic}/status', 10)
+        self.cmd_sub = self.create_subscription(String, f'{self.topic}/cmd', self.cmd_callback, 10)
 
         # Timer to read serial periodically (20 Hz)
         self.create_timer(0.05, self.read_serial)

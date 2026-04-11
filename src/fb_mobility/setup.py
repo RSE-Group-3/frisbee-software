@@ -26,6 +26,7 @@ setup(
     entry_points={
         'console_scripts': [
             'diff_drive = fb_mobility.diff_drive:main',
+            'simple_drive = fb_mobility.simple_drive:main',
         ],
     },
 )

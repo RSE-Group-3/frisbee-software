@@ -16,6 +16,7 @@ setup(
         ('share/' + package_name + '/launch', glob(package_name + '/launch/*.py')),
         ('share/' + package_name + '/urdf', glob(package_name + '/urdf/*.xacro')),
         ('share/' + package_name + '/config', glob(package_name + '/config/*.yaml')),
+        ('share/' + package_name + '/worlds', glob(package_name + '/worlds/*.world')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

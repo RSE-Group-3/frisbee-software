@@ -5,7 +5,7 @@ MODE="auto"
 [[ $# -gt 1 ]] && { echo "Too many arguments"; print_help; exit 1; }
 
 
-SESSION="teleop"
+SESSION="diff_drive_teleop"
 
 # Kill existing session if it exists
 tmux has-session -t $SESSION 2>/dev/null
@@ -16,7 +16,10 @@ fi
 tmux new-session -d -s $SESSION
 
 tmux split-window -v -t $SESSION
+tmux split-window -v -t $SESSION
 
-tmux send-keys -t $SESSION:0.0 "ros2 topic echo /cmd_vel" C-m
+tmux send-keys -t $SESSION:0.0 "ros2 run fb_mobility simple_drive" C-m 
 
-tmux send-keys -t $SESSION:0.1 "ros2 run teleop_twist_keyboard teleop_twist_keyboard" C-m
+tmux send-keys -t $SESSION:0.1 "ros2 topic echo /cmd_vel" C-m
+
+tmux send-keys -t $SESSION:0.2 "ros2 run teleop_twist_keyboard teleop_twist_keyboard" C-m

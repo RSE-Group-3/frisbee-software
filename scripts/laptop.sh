@@ -53,7 +53,6 @@ if [ "$SKIP_BUILD" = false ]; then
     colcon build --packages-select fb_planning --symlink-install
     colcon build --packages-select fb_vision --symlink-install
     colcon build --packages-select fb_manipulation --symlink-install
-    colcon build --packages-select fb_gazebo --symlink-install
     colcon build --packages-select fb_mobility --symlink-install
 else
     echo -e "\nSkipping build...\n"
@@ -67,19 +66,17 @@ tmux kill-server
 
 ######
 
+echo "Run ./scripts/foxglove_bridge.sh outside of docker."
+
 ./src/fb_planning/scripts/central_planner.sh
 
 if [ "$SIM" = true ]; then
     ./src/fb_manipulation/scripts/manipulation_sim.sh
-
-    ./src/fb_gazebo/scripts/gazebo.sh
-    ./src/fb_mobility/scripts/teleop.sh
+    ./src/fb_mobility/scripts/diff_drive_teleop.sh
+    echo "Run ./scripts/laptop_gazebo.sh outside of docker."
 else
     ./src/fb_manipulation/scripts/manipulation.sh
-
-    ./src/fb_mobility/scripts/diff_drive.sh
-    ./src/fb_mobility/scripts/teleop.sh
-
+    ./src/fb_mobility/scripts/simple_drive_teleop.sh
 fi
 
 ./src/fb_planning/scripts/path_planner.sh

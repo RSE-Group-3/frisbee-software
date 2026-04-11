@@ -11,6 +11,12 @@ import os
 def generate_launch_description():
     pkg_name = "fb_gazebo"
 
+    controller_config = PathJoinSubstitution([
+        FindPackageShare("fb_gazebo"),
+        "config",
+        "controller.yaml"
+    ])
+
     # Robot description
     robot_description = Command([
         "xacro",
@@ -19,7 +25,10 @@ def generate_launch_description():
             FindPackageShare(pkg_name),
             "urdf",
             "robot.urdf.xacro"
-        ])
+        ]),
+        " ",
+        "controller_config:=",
+        controller_config
     ])
 
     # Robot state publisher
@@ -38,7 +47,15 @@ def generate_launch_description():
                 'launch',
                 'gazebo.launch.py'
             )
-        )
+        ),
+        launch_arguments={
+            'world': os.path.join(
+                get_package_share_directory('fb_gazebo'),
+                'worlds',
+                'frisbee_world.world'
+            ),
+            'gui': 'false',
+        }.items()
     )
 
     # Node to spawn the robot in Gazebo
@@ -63,10 +80,17 @@ def generate_launch_description():
         output="screen"
     )
 
-    diff_drive_controller_spawner = Node(
+    left_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["diff_drive_controller", "-c", "/controller_manager"],
+        arguments=["left_wheel_velocity_controller", "-c", "/controller_manager"],
+        output="screen"
+    )
+
+    right_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["right_wheel_velocity_controller", "-c", "/controller_manager"],
         output="screen"
     )
 
@@ -77,25 +101,17 @@ def generate_launch_description():
         )
     )
 
-    spawn_diff_drive_handler = RegisterEventHandler(
+    spawn_left_handler = RegisterEventHandler(
         OnProcessStart(
             target_action=joint_state_broadcaster_spawner,
-            on_start=[diff_drive_controller_spawner]
+            on_start=[left_controller_spawner]
         )
     )
 
-    relay_node = Node(
-        package="topic_tools",
-        executable="relay",
-        name="cmd_vel_relay",
-        arguments=["/cmd_vel", "/diff_drive_controller/cmd_vel_unstamped"],
-        output="screen"
-    )
-
-    spawn_relay_handler = RegisterEventHandler(
+    spawn_right_handler = RegisterEventHandler(
         OnProcessStart(
-            target_action=diff_drive_controller_spawner,
-            on_start=[relay_node]
+            target_action=left_controller_spawner,
+            on_start=[right_controller_spawner]
         )
     )
 
@@ -104,6 +120,9 @@ def generate_launch_description():
         rsp_node, 
         spawn_robot,
         spawn_joint_state_handler,
-        spawn_diff_drive_handler,
-        spawn_relay_handler
+        spawn_left_handler,
+        spawn_right_handler,
+        # joint_state_broadcaster_spawner,
+        # left_controller_spawner,
+        # right_controller_spawner,
     ])

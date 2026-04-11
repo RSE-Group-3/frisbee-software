@@ -21,6 +21,7 @@ class FakeArduino(Node):
         received collector or launcher command from manipulation node
         """
         time.sleep(1)
+        if cmd_msg.data.startswith("WHEELS"): return
         self.status_pub.publish(String(data=f'OK: fake success for "{cmd_msg.data}"'))
         # self.status_pub.publish(String(data=f'FAIL: fake fail for "{subcmd_msg.data}"'))
         
