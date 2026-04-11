@@ -22,6 +22,12 @@ class DiffDriveSerial(Node):
         v_l = (v - (w * WHEEL_SEPARATION / 2.0)) / WHEEL_RADIUS
         v_r = (v + (w * WHEEL_SEPARATION / 2.0)) / WHEEL_RADIUS
 
+
+        self.get_logger().info(f"Left velocity: {v_l}, Right velocity: {v_r}")
+        if abs(v_l) > 120 or abs(v_r) > 120:
+            self.get_logger().info(f"IGNORED, keep values under 120 for now")
+            return
+
         cmd = f"WHEELS speed {v_l:.3f} {v_r:.3f}\n"
         
         self.serial_pub.publish(String(data=cmd))
@@ -32,7 +38,6 @@ class DiffDriveSerial(Node):
         self.left_gazebo_pub.publish(left_data)
         self.right_gazebo_pub.publish(right_data)
 
-        self.get_logger().info(f"Left velocity: {v_l}, Right velocity: {v_r}")
 
 def main():
     rclpy.init()

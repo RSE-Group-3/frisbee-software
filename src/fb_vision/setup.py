@@ -27,6 +27,7 @@ setup(
         'console_scripts': [
             'air_tracker_node = fb_vision.air_tracker_node:main',
             'ground_tracker_node = fb_vision.ground_tracker_node:main',
+            'ground_tracker_node_old = fb_vision.ground_tracker_node_old:main',
         ],
     },
 )

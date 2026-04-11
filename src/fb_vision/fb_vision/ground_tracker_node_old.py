@@ -24,16 +24,16 @@ class GroundTrackerNode(Node):
             1
         )
             
-        self.mask_pub = self.create_publisher(Image, 'vision/ground_segmentation/mask', 10)
-        self.vis_pub = self.create_publisher(CompressedImage, 'vision/ground_segmentation/visualization', 10)
+        self.mask_pub = self.create_publisher(Image, 'vision/ground_segmentation_old/mask', 10)
+        self.vis_pub = self.create_publisher(CompressedImage, 'vision/ground_segmentation_old/visualization', 10)
         
         self.get_logger().info("Ground Tracker Node Initialized")
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.device = device
-        # self.model = seg.lraspp_mobilenet_v3_large(weights=None, num_classes=1).to(device)
-        # self.model.load_state_dict(torch.load("./src/models/prl_segment_epoch_100.pth", map_location=self.device))
-        # self.model.eval()
+        self.model = seg.lraspp_mobilenet_v3_large(weights=None, num_classes=1).to(device)
+        self.model.load_state_dict(torch.load("./src/models/prl_segment_epoch_100.pth", map_location=self.device))
+        self.model.eval()
         self.size = 224
 
     def largest_mask_component_center(self, mask):
@@ -54,51 +54,27 @@ class GroundTrackerNode(Node):
         return (cx, cy)
 
     def predict(self, image):
-        # img = torch.from_numpy(image).float() / 255.0 # HWC
-        # img = img.permute(2, 0, 1) # → CHW
-        # img_square = TF.resize(img, [self.size, self.size], interpolation=InterpolationMode.BILINEAR)
-        # input_tensor = img_square.unsqueeze(0).to(self.device) # → NCHW
+        img = torch.from_numpy(image).float() / 255.0 # HWC
+        img = img.permute(2, 0, 1) # → CHW
+        img_square = TF.resize(img, [self.size, self.size], interpolation=InterpolationMode.BILINEAR)
+        input_tensor = img_square.unsqueeze(0).to(self.device) # → NCHW
 
-        # with torch.no_grad():
-        #     t0 = time.time()
-        #     output = self.model(input_tensor)['out']
-        #     print('Prediction time:', time.time() - t0, 's')
-        #     output = torch.sigmoid(output).cpu().numpy().squeeze() > 0.5
-        #     mask_square = (output.astype('uint8') * 255).astype('uint8')
-        #     mask = cv2.resize(mask_square, (image.shape[1], image.shape[0]), interpolation=cv2.INTER_NEAREST)
-        #     center = self.largest_mask_component_center(mask)
+        with torch.no_grad():
+            t0 = time.time()
+            output = self.model(input_tensor)['out']
+            print('Prediction time:', time.time() - t0, 's')
+            output = torch.sigmoid(output).cpu().numpy().squeeze() > 0.5
+            mask_square = (output.astype('uint8') * 255).astype('uint8')
+            mask = cv2.resize(mask_square, (image.shape[1], image.shape[0]), interpolation=cv2.INTER_NEAREST)
+            center = self.largest_mask_component_center(mask)
             
-        #     vis = image.copy() 
-        #     vis[mask > 0] = [0, 0, 255] # red overlay for mask
-        #     # cross at the center of the largest component
-        #     if center != (-1, -1):
-        #         cv2.drawMarker(vis, (int(center[0]), int(center[1])), (0, 255, 0), markerType=cv2.MARKER_CROSS, markerSize=20, thickness=2)
+            vis = image.copy() 
+            vis[mask > 0] = [0, 0, 255] # red overlay for mask
+            # cross at the center of the largest component
+            if center != (-1, -1):
+                cv2.drawMarker(vis, (int(center[0]), int(center[1])), (0, 255, 0), markerType=cv2.MARKER_CROSS, markerSize=20, thickness=2)
         
-        #     return mask, vis, center
-
-        if len(image.shape) == 3:
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        else:
-            gray = image
-
-        _, mask = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY)
-
-        center = self.largest_mask_component_center(mask)
-
-        vis = image.copy()
-        vis[mask > 0] = [0, 0, 255] 
-        
-        if center != (-1, -1):
-            cv2.drawMarker(
-                vis,
-                (int(center[0]), int(center[1])),
-                (0, 255, 0),
-                markerType=cv2.MARKER_CROSS,
-                markerSize=20,
-                thickness=2
-            )
-
-        return mask, vis, center
+            return mask, vis, center
 
     def image_callback(self, msg):
         t0 = time.time()

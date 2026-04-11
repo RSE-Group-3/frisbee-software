@@ -38,9 +38,9 @@ class GroundTrackerNode(Node):
         self.model.eval()
 
         self.calibrated = False
-        self.threshold = 225
+        self.threshold = 230
 
-        self.debug = False #True
+        self.debug = False
 
     def put_text_box(self, img, text_lines):
         font = cv2.FONT_HERSHEY_SIMPLEX
@@ -157,11 +157,8 @@ class GroundTrackerNode(Node):
                 best_score = score
                 best_t = t
 
-        self.threshold = best_t
-
         print(f"Calibrated threshold: {best_t}, IoU: {best_score:.4f}")
 
-        self.calibrated = True
         return best_t, model_mask
     
     def fill_all_holes(self, mask):
@@ -190,8 +187,11 @@ class GroundTrackerNode(Node):
         return mask
 
     def predict(self, image):
-        if not self.calibrated or self.debug:
+        if self.debug:
             _, model_mask = self.calibrate_threshold_iou(image)
+        elif not self.calibrated:
+            self.threshold, _ = self.calibrate_threshold_iou(image)
+            self.calibrated = True
             
         mask = self.binarize(image, self.threshold)
 
@@ -201,7 +201,7 @@ class GroundTrackerNode(Node):
         vis[mask > 0] = [0, 0, 255] 
         if self.debug:
             vis[model_mask > 0] = [255, 0, 0]
-        vis = self.put_text_box(vis, ['thresh: ' + str(self.threshold), f'center: {center}'])
+        vis = self.put_text_box(vis, ['threshold: ' + str(self.threshold), f'center: {center}'])
 
         if center != (-1, -1):
             cv2.drawMarker(

@@ -11,7 +11,7 @@ class ArduinoBridge(Node):
         self.declare_parameter("device", '/dev/ttyACM0')
         self.device = self.get_parameter("device").get_parameter_value().string_value
         self.declare_parameter("topic", 'arduino')
-        self.device = self.get_parameter("arduino").get_parameter_value().string_value
+        self.device = self.get_parameter("topic").get_parameter_value().string_value
 
         self.serial_port = self.device
         self.baudrate = 9600

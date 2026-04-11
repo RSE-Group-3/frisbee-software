@@ -76,7 +76,8 @@ if [ "$SIM" = true ]; then
     echo "Run ./scripts/laptop_gazebo.sh outside of docker."
 else
     ./src/fb_manipulation/scripts/manipulation.sh
-    ./src/fb_mobility/scripts/simple_drive_teleop.sh
+    # ./src/fb_mobility/scripts/simple_drive_teleop.sh
+    ./src/fb_mobility/scripts/diff_drive_teleop.sh
 fi
 
 ./src/fb_planning/scripts/path_planner.sh
