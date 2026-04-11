@@ -184,10 +184,8 @@ class GroundTrackerNode(Node):
 
         _, mask = cv2.threshold(gray, threshold, 255, cv2.THRESH_BINARY)
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-        mask = cv2.dilate(mask, kernel, iterations=1)
-        mask = cv2.erode(mask, kernel, iterations=1)
-        mask = cv2.erode(mask, kernel, iterations=1)
-        mask = cv2.dilate(mask, kernel, iterations=1)
+        mask = cv2.dilate(mask, kernel, iterations=3)
+        mask = cv2.erode(mask, kernel, iterations=3)
         mask = self.fill_all_holes(mask)
         return mask
 

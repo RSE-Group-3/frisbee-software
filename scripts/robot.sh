@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # defaults for PRL after sunset
-EXPOSURE=60
+EXPOSURE=40 # 40 day, 60 night
 BRIGHTNESS=0
 SKIP_BUILD=false
 
