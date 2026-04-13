@@ -13,5 +13,5 @@ tmux new-session -d -s $SESSION
 tmux split-window -v -t $SESSION
 
 tmux send-keys -t $SESSION:0.0 "ros2 run fb_vision ground_tracker_node" C-m
-tmux send-keys -t $SESSION:0.1 "ros2 run fb_vision ground_tracker_node_old" C-m
-# tmux send-keys -t $SESSION:0.1 "ros2 run fb_vision air_tracker_node" C-m
+# tmux send-keys -t $SESSION:0.1 "ros2 run fb_vision ground_tracker_node_old" C-m
+# tmux send-keys -t $SESSION:0.1 "ros2 run fb_visio3n air_tracker_node" C-m
