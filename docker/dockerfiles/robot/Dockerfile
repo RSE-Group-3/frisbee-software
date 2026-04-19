@@ -31,13 +31,14 @@ USER appuser
 ENV ARDUINO_DATA_DIR=/home/appuser/.arduino15
 ENV ARDUINO_CONFIG_DIR=/home/appuser/.arduino15
 
-# RUN mkdir -p /home/appuser/.arduino15 \
-    # && arduino-cli core update-index \
-    # && arduino-cli core install arduino:samd \
+RUN mkdir -p /home/appuser/.arduino15 \
+    && arduino-cli core update-index \
+    && arduino-cli core install arduino:samd \
+    && arduino-cli core install arduino:avr \
     # && arduino-cli lib install Servo \
     # && arduino-cli lib install AccelStepper
 
-RUN pip install pyserial
+RUN pip install pyserial adafruit-circuitpython-bno055
 
 # ros workspace
 WORKDIR /ros2_ws
