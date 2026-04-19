@@ -49,15 +49,27 @@ class ManipulationNode(Node):
                 ]
             case 'reset_mech':
                 sequence = [
-                    'COLLECTOR: open',
-                    'COLLECTOR: high',
+                    'COLLECTOR: reset',
                 ]
             case 'launch':
                 try:
-                    assert len(args) == 1 and args[0].isdigit()
-                    sequence = [
-                        f'LAUNCHER: launch {args[0]}'
-                    ]
+                    assert len(args) == 1 
+                    if args[0].isdigit():
+                        sequence = [
+                            f'LAUNCHER: launch {args[0]}'
+                        ]
+                    elif args[0] == 'low':
+                        sequence = [
+                            f'LAUNCHER: launch 1200' # TODO
+                        ]
+                    elif args[0] == 'med':
+                        sequence = [
+                            f'LAUNCHER: launch 1600'
+                        ]
+                    elif args[0] == 'high':
+                        sequence = [
+                            f'LAUNCHER: launch 2000'
+                        ]
                 except:
                     self.get_logger().error(f"Bad launch arguments, expected 'launch <int>', got '{msg}'")
                     sequence = [
@@ -65,11 +77,7 @@ class ManipulationNode(Node):
                     ]
             case 'collect': 
                 sequence = [
-                    'COLLECTOR: low',
-                    'COLLECTOR: close',
-                    'COLLECTOR: high_tilt',
-                    'COLLECTOR: open',
-                    'COLLECTOR: high',
+                    'COLLECTOR test',
                 ]
             case _:
                 task, sequence = None, None

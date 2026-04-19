@@ -16,8 +16,8 @@ class RobotStates(IntEnum):
     SAFESTOP = 10
 
 def task_to_state(task: str):
-    if task in _TASK_TO_STATE:
-        return _TASK_TO_STATE[task]
+    if task.split()[0] in _TASK_TO_STATE:
+        return _TASK_TO_STATE[task.split()[0]]
     else:
         return None
 
@@ -44,7 +44,7 @@ def is_valid_task_list(task_list):
         return len(task_list) == 1
     
     for task in task_list:
-        if task not in valid_tasks():
+        if task.split()[0] not in valid_tasks():
             return False
     return True
 

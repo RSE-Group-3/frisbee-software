@@ -68,22 +68,23 @@ class CentralPlanner(Node):
             self._reset()
             return
 
-        task = self.chain[self.task_idx]
+        task = self.chain[self.task_idx].split()[0]
+        task_with_args = self.chain[self.task_idx]
         self.get_logger().info(f"Executing: {task}")
 
         self.state = planner_utils.task_to_state(task)
 
         if task == 'stop':
             # TODO: other stop logic
-            self._send_manip_goal(task)
-            self._send_nav_goal(task)
+            self._send_manip_goal(task_with_args)
+            self._send_nav_goal(task_with_args)
             self.done = True
         elif task in ['predict', 'reset_track']:
             self._handle_unimplemented(task)
         elif task in ['search', 'approach', 'return', 'reset_pos']:
-            self._send_nav_goal(task)
+            self._send_nav_goal(task_with_args)
         elif task in ['collect', 'launch', 'reset_mech']:
-            self._send_manip_goal(task)
+            self._send_manip_goal(task_with_args)
         else:
             self.get_logger().error(f"Unknown task: {task}")
             self.done = True

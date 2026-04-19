@@ -8,8 +8,9 @@ import signal
 WHEEL_RADIUS = 0.09
 WHEEL_SEPARATION = 0.908
 
-MOVING_PWM = 170
-MOVING_TURN_PWM = 200
+MOVING_PWM = 200
+TURN_PWM = 250
+TURN_OTHER_PWM = -50
 
 class SimpleDriveSerial(Node):
     def __init__(self):
@@ -28,26 +29,36 @@ class SimpleDriveSerial(Node):
 
         if v > 0:
             if w < 0:
-                v_l, v_r = MOVING_TURN_PWM, 0
+                v_l, v_r = TURN_PWM, MOVING_PWM
                 self.get_logger().info(f"forward right, v_l: {v_l}, v_r: {v_r}")
             elif w == 0:
                 v_l, v_r = MOVING_PWM, MOVING_PWM
                 self.get_logger().info(f"forward, v_l: {v_l}, v_r: {v_r}")
             else:
-                v_l, v_r = 0, MOVING_TURN_PWM
+                v_l, v_r = MOVING_PWM, TURN_PWM
                 self.get_logger().info(f"forward left, v_l: {v_l}, v_r: {v_r}")
         elif v == 0:
-            v_l, v_r = 0, 0
-            self.get_logger().info(f"STOP, v_l: {v_l}, v_r: {v_r}")
+            # v_l, v_r = 0, 0
+            # self.get_logger().info(f"STOP, v_l: {v_l}, v_r: {v_r}")
+            if w < 0:
+                v_l, v_r = TURN_PWM, TURN_OTHER_PWM
+                self.get_logger().info(f"backward left, v_l: {v_l}, v_r: {v_r}")
+            elif w == 0:
+                v_l, v_r = 0, 0
+                self.get_logger().info(f"backward, v_l: {v_l}, v_r: {v_r}")
+            else:
+                v_l, v_r = TURN_OTHER_PWM, TURN_PWM
+                self.get_logger().info(f"backward right, v_l: {v_l}, v_r: {v_r}")
+        
         elif v < 0:
             if w < 0:
-                v_l, v_r = 0, -MOVING_TURN_PWM
+                v_l, v_r = -MOVING_PWM, -TURN_PWM
                 self.get_logger().info(f"backward left, v_l: {v_l}, v_r: {v_r}")
             elif w == 0:
                 v_l, v_r = -MOVING_PWM, -MOVING_PWM
                 self.get_logger().info(f"backward, v_l: {v_l}, v_r: {v_r}")
             else:
-                v_l, v_r = -MOVING_TURN_PWM, 0
+                v_l, v_r = -TURN_PWM, -MOVING_PWM
                 self.get_logger().info(f"backward right, v_l: {v_l}, v_r: {v_r}")
         
         cmd = f"WHEELS speed {v_l} {v_r}\n"
@@ -60,22 +71,15 @@ class SimpleDriveSerial(Node):
 
 def main():
     rclpy.init()
-    node = DiffDriveSerial()
-
-    def handler(signum, frame):
-        stop_cmd = String(data="WHEELS speed 0 0\n")
-        node.serial_pub.publish(stop_cmd)
-        node.left_gazebo_pub.publish(Float64MultiArray(data=[0.0]))
-        node.right_gazebo_pub.publish(Float64MultiArray(data=[0.0]))
-        node.get_logger().warn("STOP triggered by Ctrl-C")
-
-        node.destroy_node()
-        rclpy.shutdown()
-
-    signal.signal(signal.SIGINT, handler)
-
-    rclpy.spin(node)
-
+    node = SimpleDriveSerial()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        if rclpy.ok():
+            node.destroy_node()
+            rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

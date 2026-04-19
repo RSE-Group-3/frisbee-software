@@ -14,6 +14,8 @@ RUN apt update && apt install -y \
     # ros-humble-cv-bridge \
     ros-humble-image-transport \
     ros-humble-image-transport-plugins \
+    i2c-tools \
+    python3-smbus \
     && rm -rf /var/lib/apt/lists/*
 
 # system-wide arduino
@@ -38,7 +40,7 @@ RUN mkdir -p /home/appuser/.arduino15 \
     # && arduino-cli lib install Servo \
     # && arduino-cli lib install AccelStepper
 
-RUN pip install pyserial adafruit-circuitpython-bno055
+RUN pip install pyserial adafruit-blinka adafruit-circuitpython-bno055 transforms3d
 
 # ros workspace
 WORKDIR /ros2_ws

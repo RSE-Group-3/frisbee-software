@@ -35,7 +35,6 @@ Usage:
     reset_tracker         # discard previous tracking data
           
     reset                 # reset_mech,reset_pos,reset_track
-    demo                  # predict,search,approach,collect,return,launch
 
     stop                  # interrupt task execution
 ''')
@@ -53,8 +52,6 @@ def main():
                 continue
             elif user_input == 'reset':
                 user_input = 'reset_mech,reset_pos,reset_track'
-            elif user_input == 'demo':
-                user_input = 'predict,search,approach,collect,return,launch'
                 
             task_list = user_input.split(',')
             
