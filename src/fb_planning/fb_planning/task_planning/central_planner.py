@@ -18,7 +18,7 @@ class CentralPlanner(Node):
         # clients
         self.manip_client = ActionClient(self, ExecuteCommand, 'manipulation/execute')
         self.nav_client = ActionClient(self, ExecuteCommand, 'navigation/execute')
-        self.vision_client = ActionClient(self, ExecuteCommand, 'vision/execute')
+        # self.vision_client = ActionClient(self, ExecuteCommand, 'vision/execute')
 
         # subscriptions
         self.user_sub = self.create_subscription(String, 'user_input', self.user_input_callback, 10)
@@ -76,11 +76,12 @@ class CentralPlanner(Node):
         if task == 'stop':
             # TODO: other stop logic
             self._send_manip_goal(task)
+            self._send_nav_goal(task)
             self.done = True
         elif task in ['predict', 'reset_track']:
             self._handle_unimplemented(task)
         elif task in ['search', 'approach', 'return', 'reset_pos']:
-            self._handle_unimplemented(task)
+            self._send_nav_goal(task)
         elif task in ['collect', 'launch', 'reset_mech']:
             self._send_manip_goal(task)
         else:
@@ -93,6 +94,18 @@ class CentralPlanner(Node):
         self.get_logger().warn(f"{task} UNIMPLEMENTED")
         time.sleep(1)
         self.done = True
+
+    def _send_nav_goal(self, task):
+        goal_msg = ExecuteCommand.Goal()
+        goal_msg.command = task
+
+        self.nav_client.wait_for_server()
+
+        future = self.nav_client.send_goal_async(
+            goal_msg,
+            feedback_callback=self.feedback_callback
+        )
+        future.add_done_callback(self.goal_response_callback)
 
     def _send_manip_goal(self, task):
         goal_msg = ExecuteCommand.Goal()
@@ -128,7 +141,10 @@ class CentralPlanner(Node):
 
     def result_callback(self, future):
         result = future.result().result
-        self.get_logger().info(f"Result: {result.success}, {result.message}")
+        if result.success:
+            self.get_logger().info(f"Result: {result.success}, {result.message}")
+        else:
+            self.get_logger().error(f"Result: {result.success}, {result.message}")
         self.done = True
 
     def feedback_callback(self, feedback_msg):

@@ -7,7 +7,7 @@ def generate_launch_description():
     manipulation_node = Node(
         package=pkg_name,
         executable="manipulation_node",
-        arguments=["--sim"],
+        arguments=[],
         output="screen"
     )
 

@@ -1,4 +1,4 @@
-FROM ros:humble
+FROM ros:humble-ros-core
 ARG GID=1000
 ARG UID=1000
 
@@ -10,8 +10,8 @@ RUN apt update && apt install -y \
     curl \
     # vision
     ros-humble-usb-cam \
-    ros-humble-image-tools \
-    ros-humble-cv-bridge \
+    # ros-humble-image-tools \
+    # ros-humble-cv-bridge \
     ros-humble-image-transport \
     ros-humble-image-transport-plugins \
     && rm -rf /var/lib/apt/lists/*
@@ -31,11 +31,11 @@ USER appuser
 ENV ARDUINO_DATA_DIR=/home/appuser/.arduino15
 ENV ARDUINO_CONFIG_DIR=/home/appuser/.arduino15
 
-RUN mkdir -p /home/appuser/.arduino15 \
-    && arduino-cli core update-index \
-    && arduino-cli core install arduino:samd \
-    && arduino-cli lib install Servo \
-    && arduino-cli lib install AccelStepper
+# RUN mkdir -p /home/appuser/.arduino15 \
+    # && arduino-cli core update-index \
+    # && arduino-cli core install arduino:samd \
+    # && arduino-cli lib install Servo \
+    # && arduino-cli lib install AccelStepper
 
 RUN pip install pyserial
 

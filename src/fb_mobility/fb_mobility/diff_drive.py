@@ -5,30 +5,37 @@ from geometry_msgs.msg import Twist
 
 WHEEL_RADIUS = 0.09
 WHEEL_SEPARATION = 0.908
+UPPER_LIMIT = 200
+PWM_SCALE = 23
 
 class DiffDriveSerial(Node):
     def __init__(self):
         super().__init__('diffdrive_serial')
 
-        self.vel_sub = self.create_subscription(Twist, '/cmd_vel', self.cb, 10)
+        self.vel_sub = self.create_subscription(Twist, '/cmd_vel', self.callback, 10)
         self.serial_pub = self.create_publisher(String, 'arduino/cmd', 10)
         self.left_gazebo_pub = self.create_publisher(Float64MultiArray, 'left_wheel_velocity_controller/commands', 10)
         self.right_gazebo_pub = self.create_publisher(Float64MultiArray, 'right_wheel_velocity_controller/commands', 10)
+
+        self.get_logger().info(f"Started Diff Drive node")
     
-    def cb(self, msg):
+    def callback(self, msg):
         v = msg.linear.x
         w = msg.angular.z
 
         v_l = (v - (w * WHEEL_SEPARATION / 2.0)) / WHEEL_RADIUS
         v_r = (v + (w * WHEEL_SEPARATION / 2.0)) / WHEEL_RADIUS
 
+        pwm_l = v_l * PWM_SCALE
+        if pwm_l:
+            pwm_l = pwm_l/abs(pwm_l) * min(abs(pwm_l), UPPER_LIMIT)
+        pwm_r = v_r * PWM_SCALE
+        if pwm_r:
+            pwm_r = pwm_r/abs(pwm_r) * min(abs(pwm_r), UPPER_LIMIT)
 
         self.get_logger().info(f"Left velocity: {v_l}, Right velocity: {v_r}")
-        if abs(v_l) > 120 or abs(v_r) > 120:
-            self.get_logger().info(f"IGNORED, keep values under 120 for now")
-            return
 
-        cmd = f"WHEELS speed {v_l:.3f} {v_r:.3f}\n"
+        cmd = f"WHEELS speed {pwm_l:.3f} {pwm_r:.3f}\n"
         
         self.serial_pub.publish(String(data=cmd))
         

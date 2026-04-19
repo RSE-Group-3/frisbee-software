@@ -83,13 +83,13 @@ class ManipulationNode(Node):
 
             if sequence is None:
                 result.success = False
-                result.message = f"Error parsing command {msg}"
+                result.message = f"Manipulation error parsing command {msg}"
                 goal_handle.abort()
                 return result
 
             if self.command_in_progress and task != 'stop':
                 result.success = False
-                result.message = f"Task {self.command_in_progress} in progress"
+                result.message = f"Manipulation task {self.command_in_progress} in progress"
                 goal_handle.abort()
                 return result
 
@@ -101,7 +101,7 @@ class ManipulationNode(Node):
             self.goal_handle = goal_handle
 
             feedback = ExecuteCommand.Feedback()
-            feedback.status = f'Started "{task}"'
+            feedback.status = f'Manipulation started "{task}"'
             goal_handle.publish_feedback(feedback)
 
             self._done_future = Future()
@@ -113,7 +113,7 @@ class ManipulationNode(Node):
 
         except Exception as e:
             result.success = False
-            result.message = f'Error parsing command "{request.command}": {e}'
+            result.message = f'Manipulation error parsing command "{request.command}": {e}'
             goal_handle.abort()
             return result
 
@@ -124,7 +124,7 @@ class ManipulationNode(Node):
 
             result = ExecuteCommand.Result()
             result.success = True
-            result.message = f"COMPLETE: {self.current_sequence}"
+            result.message = f"Manipulation COMPLETE: {self.current_sequence}"
 
             self.goal_handle.succeed()
             self.command_in_progress = None
@@ -137,7 +137,7 @@ class ManipulationNode(Node):
         self.get_logger().info(f"Sending command: '{cmd}'")
 
         feedback = ExecuteCommand.Feedback()
-        feedback.status = f"Executing: {cmd}"
+        feedback.status = f"Manipulation executing: {cmd}"
         self.goal_handle.publish_feedback(feedback)
 
         self.serial_cmd_pub.publish(String(data=cmd))
@@ -175,7 +175,7 @@ class ManipulationNode(Node):
 
             result = ExecuteCommand.Result()
             result.success = False
-            result.message = f"Execution failed: {msg.data}"
+            result.message = f"Manipulation execution failed: {msg.data}"
 
             self.goal_handle.abort()
             self.command_in_progress = None
@@ -198,7 +198,7 @@ class ManipulationNode(Node):
 
         result = ExecuteCommand.Result()
         result.success = False
-        result.message = f"Timeout on command {cmd}"
+        result.message = f"Manipulation timeout on command {cmd}"
 
         self.goal_handle.abort()
         self.command_in_progress = None

@@ -73,16 +73,17 @@ echo "Run ./scripts/foxglove_bridge.sh outside of docker."
 if [ "$SIM" = true ]; then
     ./src/fb_manipulation/scripts/manipulation_sim.sh
     ./src/fb_mobility/scripts/diff_drive_teleop.sh
+    ./src/fb_vision/scripts/vision_sim.sh
     echo "Run ./scripts/laptop_gazebo.sh outside of docker."
 else
     ./src/fb_manipulation/scripts/manipulation.sh
     # ./src/fb_mobility/scripts/simple_drive_teleop.sh
     ./src/fb_mobility/scripts/diff_drive_teleop.sh
+    ./src/fb_vision/scripts/vision.sh
 fi
 
 ./src/fb_planning/scripts/path_planner.sh
 
-./src/fb_vision/scripts/vision.sh
 
 if [ "$CAMERA" = true ]; then
     ./src/fb_bringup/scripts/launch_cameras.sh --topic /camera/collector --device /dev/video2 --exposure $EXPOSURE --brightness $BRIGHTNESS

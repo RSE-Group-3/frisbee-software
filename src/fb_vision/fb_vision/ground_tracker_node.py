@@ -23,6 +23,7 @@ class GroundTrackerNode(Node):
             self.image_callback,
             1
         )
+
             
         self.center_pub = self.create_publisher(String, 'vision/ground_segmentation/center', 10)
         self.vis_pub = self.create_publisher(CompressedImage, 'vision/ground_segmentation/visualization', 10)
@@ -37,8 +38,13 @@ class GroundTrackerNode(Node):
         self.model.load_state_dict(torch.load("./src/models/prl_segment_epoch_100.pth", map_location=self.device))
         self.model.eval()
 
-        self.calibrated = False
-        self.threshold = 230
+        self.declare_parameter("threshold", -1)
+        self.threshold = self.get_parameter("threshold").get_parameter_value().integer_value
+        self.get_logger().info(f"Threshold: {self.threshold}")
+        if self.threshold == -1:
+            self.calibrated = False
+        else:
+            self.calibrated = True
 
         self.debug = False
 
@@ -93,23 +99,6 @@ class GroundTrackerNode(Node):
             y_offset += th + baseline + padding
 
         return img
-
-    def largest_mask_component_center(self, mask):
-        # Ensure binary uint8
-        mask = (mask > 0).astype(np.uint8)
-        # Connected components
-        num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask, connectivity=8)
-
-        if num_labels <= 1:
-            return (-1, -1)  # no foreground
-        
-        # stats[:, cv2.CC_STAT_AREA] gives area of each component
-        areas = stats[1:, cv2.CC_STAT_AREA]  # skip background
-        largest_idx = 1 + np.argmax(areas)
-        # centroid of largest component
-        cx, cy = centroids[largest_idx]
-
-        return (int(cx), int(cy))
     
     def calibrate_threshold_iou(self, image):
         img = torch.from_numpy(image).float() / 255.0
@@ -186,6 +175,20 @@ class GroundTrackerNode(Node):
         mask = self.fill_all_holes(mask)
         return mask
 
+    def largest_mask_component_center(self, mask):
+        mask = (mask > 0).astype(np.uint8)
+        num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask, connectivity=8)
+
+        if num_labels <= 1:
+            return (-1, -1)
+        
+        areas = stats[1:, cv2.CC_STAT_AREA]  # skip background
+        largest_idx = 1 + np.argmax(areas)
+        
+        cx, cy = centroids[largest_idx]
+
+        return (int(cx), int(cy))
+    
     def predict(self, image):
         if self.debug:
             _, model_mask = self.calibrate_threshold_iou(image)

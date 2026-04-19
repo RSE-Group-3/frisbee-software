@@ -13,10 +13,12 @@ class SimpleDriveSerial(Node):
     def __init__(self):
         super().__init__('simpledrive_serial')
 
-        self.vel_sub = self.create_subscription(Twist, '/cmd_vel', self.cb, 10)
+        self.vel_sub = self.create_subscription(Twist, '/cmd_vel', self.callback, 10)
         self.serial_pub = self.create_publisher(String, 'arduino/cmd', 10)
+
+        self.get_logger().info(f"Started Simple Drive node")
     
-    def cb(self, msg):
+    def callback(self, msg):
         v = msg.linear.x
         w = msg.angular.z
         self.get_logger().info(f"v: {v}, w: {w}")

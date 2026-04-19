@@ -13,4 +13,4 @@ tmux new-session -d -s $SESSION
 tmux split-window -v -t $SESSION
 
 tmux send-keys -t $SESSION:0.0 "ros2 run fb_planning central_planner" C-m
-tmux send-keys -t $SESSION:0.1 "ros2 run fb_planning user_input" C-m
+# tmux send-keys -t $SESSION:0.1 "ros2 run fb_planning user_input" C-m
