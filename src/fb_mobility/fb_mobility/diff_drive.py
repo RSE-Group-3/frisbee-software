@@ -14,7 +14,7 @@ class DiffDriveSerial(Node):
 
         self.vel_sub = self.create_subscription(Twist, '/cmd_vel', self.callback, 10)
         self.serial_pub = self.create_publisher(String, 'arduino/cmd', 10)
-        self.left_gazebo_pub = self.create_publisher(Float64MultiArray, 'left_wheel_velocity_controller/commands', 10)
+        self.left_gazebo_pub = self.create_publisher(Float64MultiArray, 'left_wheel_velocity_controller/commands', 10) # for gazebo only
         self.right_gazebo_pub = self.create_publisher(Float64MultiArray, 'right_wheel_velocity_controller/commands', 10)
 
         self.get_logger().info(f"Started Diff Drive node")
