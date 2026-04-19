@@ -12,9 +12,13 @@ class ManipulationNode(Node):
     def __init__(self):
         super().__init__('manipulation_node')
 
-        self.serial_cmd_pub = self.create_publisher(String, 'arduino/cmd', 10)
+        self.collector_serial_cmd_pub = self.create_publisher(String, 'arduino/collector/cmd', 10)
         self.serial_status_sub = self.create_subscription(
-            String, 'arduino/status', self.serial_callback, 10
+            String, 'arduino/collector/status', self.collector_serial_callback, 10
+        )
+        self.launcher_serial_cmd_pub = self.create_publisher(String, 'arduino/launcher/cmd', 10)
+        self.serial_status_sub = self.create_subscription(
+            String, 'arduino/launcher/status', self.launcher_serial_callback, 10
         )
 
         self.action = ActionServer(
@@ -140,7 +144,13 @@ class ManipulationNode(Node):
         feedback.status = f"Manipulation executing: {cmd}"
         self.goal_handle.publish_feedback(feedback)
 
-        self.serial_cmd_pub.publish(String(data=cmd))
+        if cmd.startswith('STOP'):
+            self.collector_serial_cmd_pub.publish(String(data=cmd))
+            self.launcher_serial_cmd_pub.publish(String(data=cmd))
+        elif cmd.startswith('LAUNCHER'):
+            self.launcher_serial_cmd_pub.publish(String(data=cmd))
+        elif cmd.startswith('COLLECTOR'):
+            self.collector_serial_cmd_pub.publish(String(data=cmd))
 
         if self.timer:
             self.timer.cancel()

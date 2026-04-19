@@ -186,7 +186,7 @@ class GroundTrackerNode(Node):
 
         return largest_mask
 
-    def _detect_ellipses(self, mask, min_ellipse_area=500):
+    def _detect_ellipses(self, mask):
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         ellipse_mask = np.zeros_like(mask)
@@ -202,7 +202,7 @@ class GroundTrackerNode(Node):
 
             ellipse_area = np.pi * (MA/2) * (ma/2)
 
-            if ellipse_area < min_ellipse_area:
+            if ellipse_area < 200 + cy/240*300:
                 continue
 
             contour_area = cv2.contourArea(cnt)

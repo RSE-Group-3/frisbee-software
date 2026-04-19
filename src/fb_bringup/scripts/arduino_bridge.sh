@@ -12,5 +12,7 @@ tmux new-session -d -s $SESSION
 
 tmux split-window -v -t $SESSION
 
-tmux send-keys -t $SESSION:0.0 "ros2 run fb_bringup arduino_bridge --ros-args -p device:=/dev/ttyACM0" C-m
+# tmux send-keys -t $SESSION:0.0 "ros2 run fb_bringup arduino_bridge --ros-args -p device:=/dev/ttyACM0" C-m
+tmux send-keys -t $SESSION:0.0 "ros2 run fb_bringup arduino_bridge --ros-args -p device:=/dev/ttyACM0 -p topic:=arduino/collector" C-m
+tmux send-keys -t $SESSION:0.0 "ros2 run fb_bringup arduino_bridge --ros-args -p device:=/dev/ttyACM0 -p topic:=arduino/launcher" C-m
 

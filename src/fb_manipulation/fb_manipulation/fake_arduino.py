@@ -9,21 +9,27 @@ class FakeArduino(Node):
     def __init__(self):
         super().__init__('fake_arduino')
 
-        self.cmd_sub = self.create_subscription(
-            String, 'arduino/cmd', self.serial_callback, 10)
-        self.status_pub = self.create_publisher(
-            String, 'arduino/status', 10)
+        self.collector_cmd_sub = self.create_subscription(
+            String, 'arduino/collector/cmd', self.collector_serial_callback, 10)
+        self.collector_status_pub = self.create_publisher(
+            String, 'arduino/collector/status', 10)
+        
+        self.launcher_cmd_sub = self.create_subscription(
+            String, 'arduino/launcher/cmd', self.launcher_serial_callback, 10)
+        self.launcher_status_pub = self.create_publisher(
+            String, 'arduino/collector/status', 10)
 
         self.get_logger().info("Fake Arduino node online.")
 
-    def serial_callback(self, cmd_msg: String):
-        """
-        received collector or launcher command from manipulation node
-        """
+    def collector_serial_callback(self, cmd_msg: String):
         time.sleep(1)
         if cmd_msg.data.startswith("WHEELS"): return
-        self.status_pub.publish(String(data=f'OK: fake success for "{cmd_msg.data}"'))
-        # self.status_pub.publish(String(data=f'FAIL: fake fail for "{subcmd_msg.data}"'))
+        self.collector_status_pub.publish(String(data=f'OK: fake success for "{cmd_msg.data}"'))
+
+    def launcher_serial_callback(self, cmd_msg: String):
+        time.sleep(1)
+        if cmd_msg.data.startswith("WHEELS"): return
+        self.launcher_status_pub.publish(String(data=f'OK: fake success for "{cmd_msg.data}"'))
         
 
 def main(args=None):

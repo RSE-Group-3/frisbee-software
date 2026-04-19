@@ -22,4 +22,4 @@ tmux send-keys -t $SESSION:0.0 "ros2 run fb_mobility simple_drive" C-m
 
 tmux send-keys -t $SESSION:0.1 "ros2 topic echo /cmd_vel" C-m
 
-tmux send-keys -t $SESSION:0.2 "ros2 run teleop_twist_keyboard teleop_twist_keyboard" C-m
+tmux send-keys -t $SESSION:0.2 "ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p speed:=0.15 -p turn:=0.15" C-m

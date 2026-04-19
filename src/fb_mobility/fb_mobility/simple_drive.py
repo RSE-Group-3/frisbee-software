@@ -3,6 +3,8 @@ from rclpy.node import Node
 from std_msgs.msg import String, Float64MultiArray
 from geometry_msgs.msg import Twist
 
+import signal
+
 WHEEL_RADIUS = 0.09
 WHEEL_SEPARATION = 0.908
 
@@ -14,7 +16,7 @@ class SimpleDriveSerial(Node):
         super().__init__('simpledrive_serial')
 
         self.vel_sub = self.create_subscription(Twist, '/cmd_vel', self.callback, 10)
-        self.serial_pub = self.create_publisher(String, 'arduino/cmd', 10)
+        self.serial_pub = self.create_publisher(String, 'arduino/launcher/cmd', 10) # using same arduino
 
         self.get_logger().info(f"Started Simple Drive node")
     
@@ -58,14 +60,22 @@ class SimpleDriveSerial(Node):
 
 def main():
     rclpy.init()
-    node = SimpleDriveSerial()
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    finally:
+    node = DiffDriveSerial()
+
+    def handler(signum, frame):
+        stop_cmd = String(data="WHEELS speed 0 0\n")
+        node.serial_pub.publish(stop_cmd)
+        node.left_gazebo_pub.publish(Float64MultiArray(data=[0.0]))
+        node.right_gazebo_pub.publish(Float64MultiArray(data=[0.0]))
+        node.get_logger().warn("STOP triggered by Ctrl-C")
+
         node.destroy_node()
         rclpy.shutdown()
+
+    signal.signal(signal.SIGINT, handler)
+
+    rclpy.spin(node)
+
 
 if __name__ == '__main__':
     main()

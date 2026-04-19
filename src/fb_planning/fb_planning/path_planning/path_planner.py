@@ -2,16 +2,21 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 from geometry_msgs.msg import Twist
+from sensor_msgs.msg import CompressedImage, Image
 from fb_interfaces.action import ExecuteCommand
 from rclpy.action import ActionServer
 from rclpy.task import Future
+from cv_bridge import CvBridge
+import cv2
 
 TIMEOUT = 600 # s
 
-CENTER_DEADZONE = 0.1 # normalized based on image width (0 to 1)
+CENTER_DEADZONE = 0.05 # normalized based on image width (0 to 1)
 TURN_STEP = 5.0 # deg
 FORWARD_TIME = 0.15 # s
 PAUSE_TIME = 1.0 # s to let vision catch up
+FRISBEE_TOP_GOAL = 207/240
+FRISBEE_TOP_GOAL_ERROR = 5/240
 
 class PathPlanner(Node):
     def __init__(self):
@@ -19,6 +24,14 @@ class PathPlanner(Node):
 
         self.frisbee_center_sub = self.create_subscription(String, '/vision/ground_segmentation/center', self.frisbee_center_callback, 10)
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
+
+        self.image_sub = self.create_subscription(
+            CompressedImage,
+            'camera/collector/image_raw/compressed',
+            self.image_callback,
+            1
+        )
+        self.vis_pub = self.create_publisher(CompressedImage, '/path_planner/approach/visualization', 10)
 
         self.action = ActionServer(
             self,
@@ -34,17 +47,72 @@ class PathPlanner(Node):
         self.goal_handle = None
         self._done_future = None
 
-        self.frisbee_center = None
+        self.frisbee_center = (0.5, 0)
+        self.frisbee_top = 0
         self.state = "ALIGN"
         self.state_start_time = self.get_clock().now()
         
         self.main_loop_timer = self.create_timer(0.1, self.main_loop)
+
+    def visualize(self, image):
+        h, w = image.shape[:2]
+
+        vis = image.copy()
+
+        # cv2.line(vis, (center_x, 0), (center_x, h), (255, 0, 0), 1)
+        dz_left_bound = int(w * (0.5 - CENTER_DEADZONE))
+        dz_right_bound = int(w * (0.5 + CENTER_DEADZONE))
+        cv2.line(vis, (dz_left_bound, 0), (dz_left_bound, h), (255, 0, 0), 1)
+        cv2.line(vis, (dz_right_bound, 0), (dz_right_bound, h), (255, 0, 0), 1)
+
+        top_goal_upper_bound = int(h * (FRISBEE_TOP_GOAL - FRISBEE_TOP_GOAL_ERROR))
+        top_goal_lower_bound = int(h * (FRISBEE_TOP_GOAL + FRISBEE_TOP_GOAL_ERROR))
+        cv2.line(vis, (0, top_goal_upper_bound), (w, top_goal_upper_bound), (255, 0, 0), 1)
+        cv2.line(vis, (0, top_goal_lower_bound), (w, top_goal_lower_bound), (255, 0, 0), 1)
+
+        cv2.drawMarker(
+            vis,
+            (int(self.frisbee_center[0] * w), int(self.frisbee_center[1] * h)),
+            (0, 255, 0),
+            markerType=cv2.MARKER_CROSS,
+            markerSize=20,
+            thickness=2
+        )
+
+        cv2.drawMarker(
+            vis,
+            (int(self.frisbee_center[0] * w), int(self.frisbee_top * h)),
+            (0, 0, 255),
+            markerType=cv2.MARKER_TILTED_CROSS,
+            markerSize=20,
+            thickness=2
+        )
+
+        return vis
         
+
+    def image_callback(self, msg):
+        # self.get_logger().info("Received image data for processing")
+        
+        bridge = CvBridge()
+        try:
+            cv_image = bridge.compressed_imgmsg_to_cv2(msg, desired_encoding='bgr8')
+        except Exception as e:
+            self.get_logger().error(f"Error converting image: {e}")
+            return
+        
+        vis = self.visualize(cv_image)
+
+        vis_msg = bridge.cv2_to_compressed_imgmsg(vis)
+        self.vis_pub.publish(vis_msg)
+
 
     def frisbee_center_callback(self, msg):
         try:
-            self.frisbee_center = tuple(map(int, msg.data.strip().split()))
-            self.frisbee_center = (self.frisbee_center[0]/320, self.frisbee_center[1]/240)
+            frisbee_center_and_top = tuple(map(int, msg.data.strip().split()))
+            if frisbee_center_and_top[0] != -1:
+                self.frisbee_center = (frisbee_center_and_top[0]/320, frisbee_center_and_top[1]/240)
+                self.frisbee_top = frisbee_center_and_top[2]/240
         except:
             self.get_logger().error(f"Could not parse frisbee center message ({msg.data})")
 
@@ -61,68 +129,72 @@ class PathPlanner(Node):
         twist = Twist()
 
         if self.state == "ALIGN":
+            if abs(error_x) < CENTER_DEADZONE and abs(self.frisbee_top - FRISBEE_TOP_GOAL) < FRISBEE_TOP_GOAL_ERROR:
+                self.get_logger().info("APPROACH COMPLETE")
+                result = ExecuteCommand.Result()
+                result.success = True
+                result.message = "Nav approach complete"
+                self._reset_and_return_future(result)
+                return
 
-            if abs(error_x) < CENTER_DEADZONE:
-                self.get_logger().info("Aligned. Switching to APPROACH")
-                self.state = "APPROACH"
+            if abs(error_x) >= CENTER_DEADZONE:
+                self.get_logger().info("rotating...")
+                direction = -1.0 if error_x > 0 else 1.0
+                twist.angular.z = direction * 0.5
+                self.cmd_vel_pub.publish(twist)
+
+                # self.state = "WAIT_AFTER_TURN"
+                self.state = "WAIT"
                 self.state_start_time = now
                 return
 
-            # small discrete turn
-            direction = -1.0 if error_x > 0 else 1.0
+            if self.frisbee_top < FRISBEE_TOP_GOAL - FRISBEE_TOP_GOAL_ERROR:
+                self.get_logger().info("forward...")
+                twist.linear.x = 0.3
+                self.cmd_vel_pub.publish(twist)
 
-            twist.angular.z = direction * 0.5  # low angular speed
-            self.cmd_vel_pub.publish(twist)
-
-            self.state = "WAIT_AFTER_TURN"
-            self.state_start_time = now
-
-        elif self.state == "WAIT_AFTER_TURN":
-            # stop motion
-            self.cmd_vel_pub.publish(Twist())
-
-            if (now - self.state_start_time).nanoseconds > int(PAUSE_TIME * 1e9):
-                self.state = "ALIGN"
-
-        elif self.state == "APPROACH":
-            # if too off-center, go back to align
-            if abs(error_x) > CENTER_DEADZONE:
-                self.get_logger().info("Drift detected. Re-aligning")
-                self.state = "ALIGN"
+                # self.state = "WAIT_AFTER_FORWARD"
+                self.state = "WAIT"
+                self.state_start_time = now
                 return
 
-            # forward burst
-            twist.linear.x = 0.3
-            self.cmd_vel_pub.publish(twist)
+            elif self.frisbee_top > FRISBEE_TOP_GOAL + FRISBEE_TOP_GOAL_ERROR:
+                self.get_logger().info("backward...")
+                twist.linear.x = -0.3
+                self.cmd_vel_pub.publish(twist)
 
-            self.state = "WAIT_AFTER_FORWARD"
-            self.state_start_time = now
+                # self.state = "WAIT_AFTER_BACKWARD"
+                self.state = "WAIT"
+                self.state_start_time = now
+                return
 
-        elif self.state == "WAIT_AFTER_FORWARD":
-            # stop
+        elif self.state == "WAIT":
             self.cmd_vel_pub.publish(Twist())
-
             if (now - self.state_start_time).nanoseconds > int(PAUSE_TIME * 1e9):
-                self.state = "APPROACH"
+                self.state = "ALIGN"
 
-        if self.frisbee_center[1] > 0.8:
-            self.get_logger().info("APPROACH COMPLETE")
+        # elif self.state == "WAIT_AFTER_TURN":
+        #     self.cmd_vel_pub.publish(Twist())
+        #     if (now - self.state_start_time).nanoseconds > int(PAUSE_TIME * 1e9):
+        #         self.state = "ALIGN"
 
-            result = ExecuteCommand.Result()
-            result.success = True
-            result.message = "Nav approach complete"
-            self.state = "ALIGN"
-            self._reset_and_return_future(result)
+        # elif self.state == "WAIT_AFTER_FORWARD":
+        #     self.cmd_vel_pub.publish(Twist())
+        #     if (now - self.state_start_time).nanoseconds > int(PAUSE_TIME * 1e9):
+        #         self.state = "ALIGN"
+
+        # elif self.state == "WAIT_AFTER_BACKWARD":
+        #     self.cmd_vel_pub.publish(Twist())
+        #     if (now - self.state_start_time).nanoseconds > int(PAUSE_TIME * 1e9):
+        #         self.state = "ALIGN"
+
 
     def main_loop(self):
         if self.command_in_progress == 'approach':
             self.approach()    
     
         elif self.command_in_progress == 'stop':
-            msg = Twist()
-            msg.linear.x = 1.0
-            msg.angular.z = 1.0
-            self.cmd_vel_pub.publish(msg)
+            self.cmd_vel_pub.publish(Twist())
 
             self.get_logger().warn(f"Stopped wheel motors")
 
@@ -213,8 +285,7 @@ def main(args=None):
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.serial_cmd_pub.publish(String(data="STOP"))
-        node.get_logger().warn("STOP triggered by Ctrl-C")
+        node.cmd_vel_pub.publish(Twist()) # stop wheels
     finally:
         node.destroy_node()
         rclpy.shutdown()
@@ -223,11 +294,3 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 
-
-# tune: "center" trapezoid range, and "far" y<100 range
-
-# if frisbee close and not in center, back up slowly until frisbee is far (doesn't need to be super precise)
-
-# turn based on error until frisbee is near center (vision feedback)
-
-# approach in straight line with imu fine tuning 

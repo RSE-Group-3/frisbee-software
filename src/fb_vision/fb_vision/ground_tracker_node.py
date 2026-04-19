@@ -100,7 +100,7 @@ class GroundTrackerNode(Node):
 
         return img
     
-    def calibrate_threshold_iou(self, image):
+    def get_calibrated_threshold(self, image):
         img = torch.from_numpy(image).float() / 255.0
         img = img.permute(2, 0, 1)
 
@@ -137,7 +137,7 @@ class GroundTrackerNode(Node):
         best_score = -1
 
         for t in range(0, 256, 5):
-            mask = self.binarize(image, t)
+            mask = self.get_fast_mask(image, t)
 
             score = iou(mask, model_mask)
             print(t, score)
@@ -150,7 +150,7 @@ class GroundTrackerNode(Node):
 
         return best_t, model_mask
     
-    def fill_all_holes(self, mask):
+    def _fill_all_holes(self, mask):
         mask = (mask > 0).astype(np.uint8) * 255
         h, w = mask.shape[:2]
         flood = mask.copy()
@@ -160,8 +160,27 @@ class GroundTrackerNode(Node):
         filled = mask | flood_inv
 
         return filled
+    
+    def _remove_small_near_components(self, mask):
+        mask = (mask > 0).astype(np.uint8)
 
-    def binarize(self, image, threshold):
+        # Connected components
+        num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask, connectivity=8)
+
+        output = np.zeros_like(mask)
+
+        for i in range(1, num_labels):  # skip background (0)
+            area = stats[i, cv2.CC_STAT_AREA]
+            cx, cy = centroids[i]
+
+            # keep condition:
+            # keep if NOT (below y=100 AND small area)
+            if not (cy > 100 and area < 500):
+                output[labels == i] = 1
+
+        return output
+
+    def get_fast_mask(self, image, threshold):
         if len(image.shape) == 3:
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         else:
@@ -172,33 +191,41 @@ class GroundTrackerNode(Node):
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
         mask = cv2.dilate(mask, kernel, iterations=3)
         mask = cv2.erode(mask, kernel, iterations=3)
-        mask = self.fill_all_holes(mask)
+        mask = self._fill_all_holes(mask)
+        mask = self._remove_small_near_components(mask)
         return mask
+        
 
-    def largest_mask_component_center(self, mask):
+    def _largest_mask_component_center(self, mask):
         mask = (mask > 0).astype(np.uint8)
-        num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask, connectivity=8)
+        num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
+            mask, connectivity=8
+        )
 
         if num_labels <= 1:
-            return (-1, -1)
-        
-        areas = stats[1:, cv2.CC_STAT_AREA]  # skip background
+            return (-1, -1), -1
+
+        # skip background
+        areas = stats[1:, cv2.CC_STAT_AREA]
         largest_idx = 1 + np.argmax(areas)
-        
+
         cx, cy = centroids[largest_idx]
 
-        return (int(cx), int(cy))
+        top = stats[largest_idx, cv2.CC_STAT_TOP]
+        # left = stats[largest_idx, cv2.CC_STAT_LEFT]  # optional but often useful
+
+        return (int(cx), int(cy)), int(top)
     
     def predict(self, image):
         if self.debug:
-            _, model_mask = self.calibrate_threshold_iou(image)
+            _, model_mask = self.get_calibrated_threshold(image)
         elif not self.calibrated:
-            self.threshold, _ = self.calibrate_threshold_iou(image)
+            self.threshold, _ = self.get_calibrated_threshold(image)
             self.calibrated = True
             
-        mask = self.binarize(image, self.threshold)
+        mask = self.get_fast_mask(image, self.threshold)
 
-        center = self.largest_mask_component_center(mask)
+        center, top = self._largest_mask_component_center(mask)
 
         vis = image.copy()
         vis[mask > 0] = [0, 0, 255] 
@@ -216,7 +243,7 @@ class GroundTrackerNode(Node):
                 thickness=2
             )
 
-        return mask, vis, center
+        return mask, vis, center, top
 
     def image_callback(self, msg):
         # self.get_logger().info("Received image data for processing")
@@ -228,9 +255,10 @@ class GroundTrackerNode(Node):
             self.get_logger().error(f"Error converting image: {e}")
             return
         
-        mask, vis, center = self.predict(cv_image)
+        mask, vis, center, top = self.predict(cv_image)
 
-        center_msg = String(data=' '.join(map(str, center)))
+        # center_msg = String(data=' '.join(map(str, center)))
+        center_msg = String(data=' '.join(list(map(str, center)) + [str(top)]))
         self.center_pub.publish(center_msg)
         vis_msg = bridge.cv2_to_compressed_imgmsg(vis)
         self.vis_pub.publish(vis_msg)
