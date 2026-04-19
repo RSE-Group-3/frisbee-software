@@ -156,7 +156,6 @@ class ManipulationNode(Node):
             self.timer.cancel()
         self.timer = self.create_timer(TIMEOUT, self._command_timeout)
 
-
     def serial_callback(self, msg: String):
         self.get_logger().info(f"Status received '{msg.data}'")
 
@@ -192,6 +191,12 @@ class ManipulationNode(Node):
 
             if self._done_future and not self._done_future.done():
                 self._done_future.set_result(result)
+
+    def collector_serial_callback(self, msg: String):
+        self.serial_callback(msg)
+
+    def launcher_serial_callback(self, msg: String):
+        self.serial_callback(msg)
 
 
     def _command_timeout(self):

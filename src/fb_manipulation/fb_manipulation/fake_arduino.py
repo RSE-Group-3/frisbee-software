@@ -17,7 +17,7 @@ class FakeArduino(Node):
         self.launcher_cmd_sub = self.create_subscription(
             String, 'arduino/launcher/cmd', self.launcher_serial_callback, 10)
         self.launcher_status_pub = self.create_publisher(
-            String, 'arduino/collector/status', 10)
+            String, 'arduino/launcher/status', 10)
 
         self.get_logger().info("Fake Arduino node online.")
 
