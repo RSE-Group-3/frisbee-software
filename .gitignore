@@ -212,3 +212,4 @@ log/*
 */__pycache__/*
 
 src/models/*
+src/fb_vision/log/*
