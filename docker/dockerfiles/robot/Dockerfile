@@ -1,4 +1,4 @@
-FROM ros:humble-ros-core
+FROM ros:humble
 ARG GID=1000
 ARG UID=1000
 
