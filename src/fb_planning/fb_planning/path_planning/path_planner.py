@@ -8,15 +8,31 @@ from rclpy.action import ActionServer
 from rclpy.task import Future
 from cv_bridge import CvBridge
 import cv2
+import numpy as np
 
 TIMEOUT = 600 # s
 
-CENTER_DEADZONE = 0.05 # normalized based on image width (0 to 1)
-TURN_STEP = 5.0 # deg
-FORWARD_TIME = 0.15 # s
-PAUSE_TIME = 1.0 # s to let vision catch up
-FRISBEE_TOP_GOAL = 207/240
+# X CENTER
+CENTER = 183/320 
+CENTER_DEADZONE_LOWER = 0.01 # normalized based on image width (0 to 1)
+CENTER_DEADZONE_UPPER = 0.1 # normalized based on image width (0 to 1)
+
+# Y CENTER
+FRISBEE_TOP_GOAL = 191/240
+FRISBEE_TOP_CLOSE = 150/240
 FRISBEE_TOP_GOAL_ERROR = 5/240
+
+LOOP_TIME = 0.1 # s
+ERROR_SCALE = 10 # scale normalized error to get actual move time
+ERROR_SCALE_INCREMENT = 4 # add to error scale when turning in the same direction
+MIN_MOVE_TIME = 0.1 # s
+MAX_MOVE_TIME_UPPER = 1.0 # s
+MAX_MOVE_TIME_LOWER = 0.3 # s
+PAUSE_TIME = 3.0 # s to let vision catch up
+VERIFY_TIME = 1.0
+
+LINEAR_X = 0.3
+ANGULAR_Z = 0.5
 
 class PathPlanner(Node):
     def __init__(self):
@@ -32,6 +48,7 @@ class PathPlanner(Node):
             1
         )
         self.vis_pub = self.create_publisher(CompressedImage, '/path_planner/approach/visualization', 10)
+        self.path_timer_pub = self.create_publisher(String, '/path_planner/approach/timers', 10)
 
         self.action = ActionServer(
             self,
@@ -52,7 +69,11 @@ class PathPlanner(Node):
         self.state = "ALIGN"
         self.state_start_time = self.get_clock().now()
         
-        self.main_loop_timer = self.create_timer(0.1, self.main_loop)
+        self.main_loop_timer = self.create_timer(LOOP_TIME, self.main_loop)
+
+        self.last_rot_dir = 0
+        self.rot_streak = 0
+        self.rot_updated = False
 
     def visualize(self, image):
         h, w = image.shape[:2]
@@ -60,10 +81,18 @@ class PathPlanner(Node):
         vis = image.copy()
 
         # cv2.line(vis, (center_x, 0), (center_x, h), (255, 0, 0), 1)
-        dz_left_bound = int(w * (0.5 - CENTER_DEADZONE))
-        dz_right_bound = int(w * (0.5 + CENTER_DEADZONE))
+        dz_left_bound = int(w * (CENTER - CENTER_DEADZONE_LOWER))
+        dz_right_bound = int(w * (CENTER + CENTER_DEADZONE_LOWER))
         cv2.line(vis, (dz_left_bound, 0), (dz_left_bound, h), (255, 0, 0), 1)
         cv2.line(vis, (dz_right_bound, 0), (dz_right_bound, h), (255, 0, 0), 1)
+
+        dz_left_bound = int(w * (CENTER - CENTER_DEADZONE_UPPER))
+        dz_right_bound = int(w * (CENTER + CENTER_DEADZONE_UPPER))
+        cv2.line(vis, (dz_left_bound, 0), (dz_left_bound, h), (255, 150, 0), 1)
+        cv2.line(vis, (dz_right_bound, 0), (dz_right_bound, h), (255, 150, 0), 1)
+
+        top_close = int(h * (FRISBEE_TOP_CLOSE))
+        cv2.line(vis, (0, top_close), (w, top_close), (255, 150, 0), 1)
 
         top_goal_upper_bound = int(h * (FRISBEE_TOP_GOAL - FRISBEE_TOP_GOAL_ERROR))
         top_goal_lower_bound = int(h * (FRISBEE_TOP_GOAL + FRISBEE_TOP_GOAL_ERROR))
@@ -116,6 +145,7 @@ class PathPlanner(Node):
         except:
             self.get_logger().error(f"Could not parse frisbee center message ({msg.data})")
 
+
     def approach(self):
         if self.frisbee_center is None:
             self.get_logger().warn("Waiting for frisbee center...")
@@ -123,74 +153,161 @@ class PathPlanner(Node):
 
         now = self.get_clock().now()
 
-        # normalized x: 0 (left) → 1 (right), center = 0.5
-        error_x = self.frisbee_center[0] - 0.5
+        error_x = self.frisbee_center[0] - CENTER
+        error_y = self.frisbee_top - FRISBEE_TOP_GOAL
 
         twist = Twist()
 
+        if self.state == "VERIFYING":
+            if (now - self.state_start_time).nanoseconds > int(VERIFY_TIME * 1e9):
+                if abs(error_x) < CENTER_DEADZONE_LOWER and abs(error_y) < FRISBEE_TOP_GOAL_ERROR:
+                    self.get_logger().info("APPROACH COMPLETE")
+                    result = ExecuteCommand.Result()
+                    result.success = True
+                    result.message = "Nav approach complete"
+                    self._reset_and_return_future(result)
+                    return
+                else:
+                    self.state = "ALIGN"
+                    self.state_start_time = now
+                    self.get_logger().info("reset start_time, aligning")
+                    return
+            
+        # set based on y
+        if self.frisbee_top < FRISBEE_TOP_CLOSE:
+            center_deadzone = CENTER_DEADZONE_UPPER
+            max_move_time = MAX_MOVE_TIME_UPPER
+        else:
+            center_deadzone = CENTER_DEADZONE_LOWER
+            max_move_time = MAX_MOVE_TIME_LOWER
+
+        elapsed = (now - self.state_start_time).nanoseconds / 1e9
+        rot_interval = np.clip(abs(error_x) * ERROR_SCALE, MIN_MOVE_TIME, max_move_time)
+        lin_interval = np.clip(abs(error_y) * ERROR_SCALE, MIN_MOVE_TIME, max_move_time)
+
         if self.state == "ALIGN":
-            if abs(error_x) < CENTER_DEADZONE and abs(self.frisbee_top - FRISBEE_TOP_GOAL) < FRISBEE_TOP_GOAL_ERROR:
-                self.get_logger().info("APPROACH COMPLETE")
-                result = ExecuteCommand.Result()
-                result.success = True
-                result.message = "Nav approach complete"
-                self._reset_and_return_future(result)
+            if abs(error_x) < center_deadzone and abs(error_y) < FRISBEE_TOP_GOAL_ERROR:
+                
+                self.get_logger().info("verifying")
+                self.state = "VERIFYING"
+                self.state_start_time = now
+                self.get_logger().info("reset start_time, verifying")
                 return
 
-            if abs(error_x) >= CENTER_DEADZONE:
-                self.get_logger().info("rotating...")
+            elif abs(error_x) >= center_deadzone:
                 direction = -1.0 if error_x > 0 else 1.0
-                twist.angular.z = direction * 0.5
+                twist.angular.z = direction * ANGULAR_Z
                 self.cmd_vel_pub.publish(twist)
 
-                # self.state = "WAIT_AFTER_TURN"
-                self.state = "WAIT"
-                self.state_start_time = now
-                return
+                if not self.rot_updated:
+                    if direction == self.last_rot_dir:
+                        self.rot_streak += 1
+                    else:
+                        self.rot_streak = 1
+                        self.last_rot_dir = direction
+                self.rot_updated = True
 
-            if self.frisbee_top < FRISBEE_TOP_GOAL - FRISBEE_TOP_GOAL_ERROR:
-                self.get_logger().info("forward...")
-                twist.linear.x = 0.3
+                effective_error_scale = ERROR_SCALE + max(0, self.rot_streak - 3) * ERROR_SCALE_INCREMENT
+
+                rot_interval = np.clip(
+                    abs(error_x) * effective_error_scale,
+                    MIN_MOVE_TIME,
+                    max_move_time
+                )
+
+                self.get_logger().info(f"rotating | elapsed: {elapsed:.3f}s / interval: {rot_interval:.3f}s | scale: {effective_error_scale:.2f}")
+
+                if elapsed > rot_interval:
+                    self.state = "WAIT"
+                    self.state_start_time = now
+                    self.get_logger().info("reset start_time, waiting")
+                else:
+                    self.state = "ALIGN"
+
+            elif self.frisbee_top <= FRISBEE_TOP_GOAL - FRISBEE_TOP_GOAL_ERROR:
+                self.rot_streak = 0 # reset
+                self.last_rot_dir = 0
+
+                twist.linear.x = LINEAR_X
                 self.cmd_vel_pub.publish(twist)
 
-                # self.state = "WAIT_AFTER_FORWARD"
-                self.state = "WAIT"
-                self.state_start_time = now
-                return
+                self.get_logger().info(f"forward | elapsed: {elapsed:.3f}s / interval: {lin_interval:.3f}s | scale: {ERROR_SCALE:.2f}")
+                if elapsed > lin_interval:
+                    self.state = "WAIT"
+                    self.state_start_time = now
+                    self.get_logger().info("reset start_time, waiting")
+                else:
+                    self.state = "ALIGN"
 
-            elif self.frisbee_top > FRISBEE_TOP_GOAL + FRISBEE_TOP_GOAL_ERROR:
-                self.get_logger().info("backward...")
-                twist.linear.x = -0.3
+            elif self.frisbee_top >= FRISBEE_TOP_GOAL + FRISBEE_TOP_GOAL_ERROR:
+                self.rot_streak = 0 # reset
+                self.last_rot_dir = 0
+                
+                twist.linear.x = -LINEAR_X
                 self.cmd_vel_pub.publish(twist)
 
-                # self.state = "WAIT_AFTER_BACKWARD"
-                self.state = "WAIT"
-                self.state_start_time = now
-                return
+                self.get_logger().info(f"backward | elapsed: {elapsed:.3f}s / interval: {lin_interval:.3f}s | scale: {ERROR_SCALE:.2f}")
+                if elapsed > lin_interval:
+                    self.state = "WAIT"
+                    self.state_start_time = now
+                    self.get_logger().info("reset start_time, waiting")
+                else:
+                    self.state = "ALIGN"
 
+            else:
+                self.get_logger().error("stuck in ALIGN")
+
+            self.path_timer_pub.publish(String(data=f"rotation interval: {MIN_MOVE_TIME} < {rot_interval} < {max_move_time}\nlinear interval: {MIN_MOVE_TIME} < {lin_interval} < {max_move_time}"))
+            
+                
         elif self.state == "WAIT":
+            self.rot_updated = False
+            
             self.cmd_vel_pub.publish(Twist())
             if (now - self.state_start_time).nanoseconds > int(PAUSE_TIME * 1e9):
+                self.state_start_time = now
+                self.get_logger().info("reset start_time, aligning")
                 self.state = "ALIGN"
 
-        # elif self.state == "WAIT_AFTER_TURN":
-        #     self.cmd_vel_pub.publish(Twist())
-        #     if (now - self.state_start_time).nanoseconds > int(PAUSE_TIME * 1e9):
-        #         self.state = "ALIGN"
 
-        # elif self.state == "WAIT_AFTER_FORWARD":
-        #     self.cmd_vel_pub.publish(Twist())
-        #     if (now - self.state_start_time).nanoseconds > int(PAUSE_TIME * 1e9):
-        #         self.state = "ALIGN"
+    def wiggle(self):
+        twist = Twist()
+        duration = 0.2
 
-        # elif self.state == "WAIT_AFTER_BACKWARD":
-        #     self.cmd_vel_pub.publish(Twist())
-        #     if (now - self.state_start_time).nanoseconds > int(PAUSE_TIME * 1e9):
-        #         self.state = "ALIGN"
+        actions = [
+            ("forward", (LINEAR_X, 0.0)),
+            ("stop", (0.0, 0.0)),
+            ("backward", (-LINEAR_X, 0.0)),
+            ("stop", (0.0, 0.0)),
+            ("left", (0.0, ANGULAR_Z)),
+            ("stop", (0.0, 0.0)),
+            ("right", (0.0, -ANGULAR_Z)),
+            ("stop", (0.0, 0.0)),
+        ]
 
+        for name, (lx, az) in actions:
+            self.get_logger().info(f"wiggle: {name}")
+
+            twist.linear.x = lx
+            twist.angular.z = az
+
+            start = self.get_clock().now()
+
+            while (self.get_clock().now() - start).nanoseconds < int(duration * 1e9):
+                self.cmd_vel_pub.publish(twist)
+
+            self.cmd_vel_pub.publish(Twist())
+
+        result = ExecuteCommand.Result()
+        result.success = True
+        result.message = "Nav wiggle complete"
+        self._reset_and_return_future(result)
 
     def main_loop(self):
-        if self.command_in_progress == 'approach':
+        if self.command_in_progress == 'wiggle':
+            self.wiggle()    
+    
+        elif self.command_in_progress == 'approach':
             self.approach()    
     
         elif self.command_in_progress == 'stop':
@@ -212,7 +329,7 @@ class PathPlanner(Node):
         task_tokens = msg.strip().split()
         task, args = task_tokens[0], task_tokens[1:]
 
-        return task
+        return task, args
 
 
     async def execute_callback(self, goal_handle):
@@ -221,7 +338,12 @@ class PathPlanner(Node):
 
         try:
             msg = request.command
-            task = self._parse_action_goal(msg)
+            task, args = self._parse_action_goal(msg)
+            
+            # temporary for extra commands
+            if len(args):
+                assert len(args) == 1
+                task = args[0]
 
             if self.command_in_progress is not None and task != 'stop':
                 result.success = False

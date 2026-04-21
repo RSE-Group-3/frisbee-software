@@ -8,9 +8,10 @@ import signal
 WHEEL_RADIUS = 0.09
 WHEEL_SEPARATION = 0.908
 
-MOVING_PWM = 200
-TURN_PWM = 250
-TURN_OTHER_PWM = -50
+MOVING = 1
+MOVING_OTHER = 0
+TURN = 1
+TURN_OTHER = -1
 
 class SimpleDriveSerial(Node):
     def __init__(self):
@@ -18,6 +19,8 @@ class SimpleDriveSerial(Node):
 
         self.vel_sub = self.create_subscription(Twist, '/cmd_vel', self.callback, 10)
         self.serial_pub = self.create_publisher(String, 'arduino/launcher/cmd', 10) # using same arduino
+        self.left_gazebo_pub = self.create_publisher(Float64MultiArray, 'left_wheel_velocity_controller/commands', 10) # for gazebo only
+        self.right_gazebo_pub = self.create_publisher(Float64MultiArray, 'right_wheel_velocity_controller/commands', 10)
 
         self.get_logger().info(f"Started Simple Drive node")
     
@@ -26,47 +29,42 @@ class SimpleDriveSerial(Node):
         w = msg.angular.z
         self.get_logger().info(f"v: {v}, w: {w}")
 
-
         if v > 0:
             if w < 0:
-                v_l, v_r = TURN_PWM, MOVING_PWM
-                self.get_logger().info(f"forward right, v_l: {v_l}, v_r: {v_r}")
+                v_l, v_r = MOVING_OTHER, MOVING
             elif w == 0:
-                v_l, v_r = MOVING_PWM, MOVING_PWM
-                self.get_logger().info(f"forward, v_l: {v_l}, v_r: {v_r}")
+                v_l, v_r = MOVING, MOVING
             else:
-                v_l, v_r = MOVING_PWM, TURN_PWM
-                self.get_logger().info(f"forward left, v_l: {v_l}, v_r: {v_r}")
+                v_l, v_r = MOVING, MOVING_OTHER
         elif v == 0:
-            # v_l, v_r = 0, 0
-            # self.get_logger().info(f"STOP, v_l: {v_l}, v_r: {v_r}")
             if w < 0:
-                v_l, v_r = TURN_PWM, TURN_OTHER_PWM
-                self.get_logger().info(f"backward left, v_l: {v_l}, v_r: {v_r}")
+                v_l, v_r = TURN, TURN_OTHER
             elif w == 0:
                 v_l, v_r = 0, 0
-                self.get_logger().info(f"backward, v_l: {v_l}, v_r: {v_r}")
             else:
-                v_l, v_r = TURN_OTHER_PWM, TURN_PWM
-                self.get_logger().info(f"backward right, v_l: {v_l}, v_r: {v_r}")
+                v_l, v_r = TURN_OTHER, TURN
         
         elif v < 0:
             if w < 0:
-                v_l, v_r = -MOVING_PWM, -TURN_PWM
-                self.get_logger().info(f"backward left, v_l: {v_l}, v_r: {v_r}")
+                v_l, v_r = -MOVING, -MOVING_OTHER
             elif w == 0:
-                v_l, v_r = -MOVING_PWM, -MOVING_PWM
-                self.get_logger().info(f"backward, v_l: {v_l}, v_r: {v_r}")
+                v_l, v_r = -MOVING, -MOVING
             else:
-                v_l, v_r = -TURN_PWM, -MOVING_PWM
-                self.get_logger().info(f"backward right, v_l: {v_l}, v_r: {v_r}")
+                v_l, v_r = -MOVING_OTHER, -MOVING
+
+        self.get_logger().info(f"===")
+        self.get_logger().info(f"Left velocity: {v_l}, Right velocity: {v_r}")
+        # self.get_logger().info(f"Left PWM: {v_l}, Right PWM: {v_r}")
         
         cmd = f"WHEELS speed {v_l} {v_r}\n"
         if v_l == 0 and v_r == 0:
             cmd = f"STOP\n"
         
-        
         self.serial_pub.publish(String(data=cmd))
+        left_data = Float64MultiArray(data=[v_l])
+        right_data = Float64MultiArray(data=[v_r])
+        self.left_gazebo_pub.publish(left_data)
+        self.right_gazebo_pub.publish(right_data)
 
 
 def main():

@@ -27,6 +27,7 @@ setup(
         'console_scripts': [
             'diff_drive = fb_mobility.diff_drive:main',
             'simple_drive = fb_mobility.simple_drive:main',
+            'wheel_encoders = fb_mobility.wheel_encoders:main',
         ],
     },
 )

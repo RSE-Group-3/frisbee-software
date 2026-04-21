@@ -62,6 +62,7 @@ def main():
 
 
     except KeyboardInterrupt:
+        run_command('stop')
         print("Exiting.")
 
 if __name__ == "__main__":

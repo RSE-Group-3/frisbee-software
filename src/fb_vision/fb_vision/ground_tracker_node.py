@@ -48,6 +48,10 @@ class GroundTrackerNode(Node):
 
         self.debug = False
 
+        self.vis = True #False
+        self.vis_counter = 0
+        self.vis_skip = 10
+
     def put_text_box(self, img, text_lines):
         font = cv2.FONT_HERSHEY_SIMPLEX
         font_scale = 0.4
@@ -147,6 +151,7 @@ class GroundTrackerNode(Node):
                 best_t = t
 
         print(f"Calibrated threshold: {best_t}, IoU: {best_score:.4f}")
+        assert best_t != 0 and best_t != 255
 
         return best_t, model_mask
     
@@ -261,7 +266,12 @@ class GroundTrackerNode(Node):
         center_msg = String(data=' '.join(list(map(str, center)) + [str(top)]))
         self.center_pub.publish(center_msg)
         vis_msg = bridge.cv2_to_compressed_imgmsg(vis)
-        self.vis_pub.publish(vis_msg)
+
+        self.vis_counter += 1
+        if self.vis_counter % self.vis_skip != 0:
+            return
+        if self.vis:
+            self.vis_pub.publish(vis_msg)
 
 def main(args=None):
     rclpy.init(args=args)

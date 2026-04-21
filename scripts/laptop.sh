@@ -91,4 +91,5 @@ if [ "$CAMERA" = true ]; then
 fi
 
 sleep 1
-tmux attach-session -t central_planner
+# tmux attach-session -t central_planner
+tmux attach-session -t path_planner

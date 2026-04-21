@@ -14,7 +14,7 @@ class ArduinoBridge(Node):
         self.topic = self.get_parameter("topic").get_parameter_value().string_value
 
         self.serial_port = self.device
-        self.baudrate = 9600
+        self.baudrate = 115200
         self.ser = None
         self.arduino_connected = False
 
